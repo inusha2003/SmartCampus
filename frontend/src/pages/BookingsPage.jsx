@@ -150,6 +150,20 @@ export function BookingsPage() {
     }
   }
 
+  const remove = async (id) => {
+    if (!window.confirm('Delete this pending request?')) return
+    setErr(null)
+    try {
+      await api.delete(`/api/bookings/${id}/request`)
+      if (editingBookingId === id) {
+        resetForm()
+      }
+      await load()
+    } catch {
+      setErr('Could not delete request')
+    }
+  }
+
   return (
     <RequireUser>
     <div>
@@ -266,6 +280,9 @@ export function BookingsPage() {
             <div className="row-actions">
               <button type="button" className="btn ghost" onClick={() => edit(b)}>
                 Edit
+              </button>
+              <button type="button" className="btn danger" onClick={() => void remove(b.id)}>
+                Delete
               </button>
             </div>
           )}

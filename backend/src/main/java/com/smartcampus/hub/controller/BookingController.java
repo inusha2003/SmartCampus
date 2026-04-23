@@ -46,6 +46,12 @@ public class BookingController {
                 req.expectedAttendees()));
     }
 
+    @DeleteMapping("/{id}/request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePending(@PathVariable Long id) {
+        bookingService.deletePending(CurrentUser.requireUser(), id);
+    }
+
     @GetMapping("/mine")
     public List<BookingDto> mine() {
         return bookingService.listMine(CurrentUser.requireUser()).stream()
