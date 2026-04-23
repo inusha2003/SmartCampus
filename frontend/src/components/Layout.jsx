@@ -5,6 +5,7 @@ import {
   HiOutlineCalendarDays,
   HiOutlineClipboardDocumentList,
   HiOutlineSquares2X2,
+  HiOutlineTicket,
   HiOutlineWrenchScrewdriver,
   HiOutlineUsers,
 } from 'react-icons/hi2'
@@ -54,6 +55,10 @@ export function Layout() {
                   <NavLink to="/admin/resources">
                     <HiOutlineSquares2X2 />
                     Admin: resources
+                  </NavLink>
+                  <NavLink to="/admin/tickets">
+                    <HiOutlineTicket />
+                    Admin: tickets
                   </NavLink>
                   <NavLink to="/admin/users">
                     <HiOutlineUsers />
