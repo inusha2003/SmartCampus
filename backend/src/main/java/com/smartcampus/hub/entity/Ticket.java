@@ -31,6 +31,10 @@ public class Ticket {
     @Column(length = 500)
     private String locationText;
 
+    /** Short headline from the reporter; optional for legacy rows. */
+    @Column(length = 200)
+    private String title;
+
     @Column(nullable = false)
     private String category;
 
@@ -41,6 +45,10 @@ public class Ticket {
     @Column(nullable = false)
     @Builder.Default
     private TicketPriority priority = TicketPriority.MEDIUM;
+
+    /** Display name for follow-up; letters / spaces / basic punctuation only when validated. */
+    @Column(length = 120)
+    private String contactName;
 
     private String contactEmail;
     private String contactPhone;

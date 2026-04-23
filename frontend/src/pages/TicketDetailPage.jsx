@@ -153,6 +153,12 @@ export function TicketDetailPage() {
         <span className="tag">{ticket.status.replaceAll('_', ' ')}</span>
       </h1>
       <div className="card">
+        {ticket.title?.trim() ? (
+          <p className="ticket-detail-title-text">{ticket.title.trim()}</p>
+        ) : null}
+        {ticket.contactName?.trim() ? (
+          <p className="small">Contact: {ticket.contactName.trim()}</p>
+        ) : null}
         <p className="small">
           {ticket.category} · {ticket.priority}
         </p>

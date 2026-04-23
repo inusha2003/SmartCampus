@@ -38,11 +38,13 @@ public class TicketController {
     public TicketDto create(
             @RequestParam(required = false) Long resourceId,
             @RequestParam(required = false) String locationText,
+            @RequestParam String title,
             @RequestParam String category,
             @RequestParam String description,
             @RequestParam(required = false) TicketPriority priority,
-            @RequestParam(required = false) String contactEmail,
-            @RequestParam(required = false) String contactPhone,
+            @RequestParam String contactName,
+            @RequestParam String contactEmail,
+            @RequestParam String contactPhone,
             @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         if (files != null && files.size() > 3) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "TOO_MANY_FILES", "Maximum 3 images per ticket");
@@ -51,9 +53,11 @@ public class TicketController {
                 CurrentUser.requireUser(),
                 resourceId,
                 locationText,
+                title,
                 category,
                 description,
                 priority,
+                contactName,
                 contactEmail,
                 contactPhone,
                 files);
@@ -87,6 +91,46 @@ public class TicketController {
                 req.resolutionNotes(),
                 req.rejectReason());
         return toDto(t);
+    }
+
+    /** Reporter updates ticket details (OPEN / IN_PROGRESS only). Optional image replace via multipart. */
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public TicketDto patchDetailsAsReporter(
+            @PathVariable Long id,
+            @RequestParam String locationText,
+            @RequestParam String title,
+            @RequestParam String category,
+            @RequestParam String description,
+            @RequestParam(required = false) TicketPriority priority,
+            @RequestParam String contactName,
+            @RequestParam String contactEmail,
+            @RequestParam String contactPhone,
+            @RequestParam(defaultValue = "false") boolean replaceAttachments,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+        if (files != null && files.size() > 3) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "TOO_MANY_FILES", "Maximum 3 images per ticket");
+        }
+        Ticket updated = ticketService.updateTicketDetailsAsReporter(
+                CurrentUser.requireUser(),
+                id,
+                locationText,
+                title,
+                category,
+                description,
+                priority,
+                contactName,
+                contactEmail,
+                contactPhone,
+                replaceAttachments,
+                files);
+        return toDto(updated);
+    }
+
+    /** Reporter deletes own ticket (OPEN / IN_PROGRESS only). */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAsReporter(@PathVariable Long id) {
+        ticketService.deleteTicketAsReporter(CurrentUser.requireUser(), id);
     }
 
     @GetMapping("/{id}/comments")

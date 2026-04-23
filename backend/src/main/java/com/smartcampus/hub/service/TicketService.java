@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -24,13 +28,25 @@ public class TicketService {
 
     private static final int MAX_ATTACHMENTS = 3;
     private static final int MAX_CATEGORY_LENGTH = 120;
+    private static final int MAX_TITLE_LENGTH = 200;
     private static final int MAX_LOCATION_LENGTH = 500;
+    /** Ticket issue description (reporter); no whitespace, short cap. */
+    private static final int MAX_TICKET_DESCRIPTION_LENGTH = 150;
     private static final int MAX_DESCRIPTION_LENGTH = 4000;
+    private static final int MAX_CONTACT_NAME_LENGTH = 120;
     private static final int MAX_CONTACT_EMAIL_LENGTH = 254;
-    private static final int MAX_CONTACT_PHONE_LENGTH = 25;
+    private static final int MAX_CONTACT_PHONE_LENGTH = 10;
     private static final int MAX_COMMENT_LENGTH = 4000;
     private static final Pattern SIMPLE_EMAIL = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
-    private static final Pattern SIMPLE_PHONE = Pattern.compile("^[+0-9()\\-\\s]{7,25}$");
+    /** Letters (any script), digits, @ and . only — matches frontend input rules. */
+    private static final Pattern EMAIL_ALLOWED_CHARS = Pattern.compile("^[\\p{L}\\p{N}@.]+$");
+    /** Digits only, exactly 10 (e.g. Sri Lanka mobile). */
+    private static final Pattern PHONE_DIGITS_ONLY = Pattern.compile("^\\d{10}$");
+    /** Unicode letters, spaces, period, apostrophe, hyphen (for names). */
+    private static final Pattern CONTACT_NAME_LETTERS = Pattern.compile("^[\\p{L}\\s'.-]+$");
+
+    private static final EnumSet<TicketStatus> REPORTER_MUTABLE_STATUSES =
+            EnumSet.of(TicketStatus.OPEN, TicketStatus.IN_PROGRESS);
 
     private final TicketRepository ticketRepository;
     private final TicketAttachmentRepository ticketAttachmentRepository;
@@ -41,9 +57,9 @@ public class TicketService {
     private final NotificationService notificationService;
 
     @Transactional
-    public Ticket create(User reporter, Long resourceId, String locationText, String category,
-                         String description, TicketPriority priority, String contactEmail, String contactPhone,
-                         List<MultipartFile> files) {
+    public Ticket create(User reporter, Long resourceId, String locationText, String title, String category,
+                         String description, TicketPriority priority, String contactName, String contactEmail,
+                         String contactPhone, List<MultipartFile> files) {
         CampusResource resource = null;
         if (resourceId != null) {
             resource = campusResourceService.get(resourceId);
@@ -53,25 +69,47 @@ public class TicketService {
             throw new ApiException(HttpStatus.BAD_REQUEST, "LOCATION_REQUIRED",
                     "Provide a resource or a location description");
         }
+        String normalizedTitle = normalizeRequiredText(
+                title, "TITLE_REQUIRED", "Title is required", MAX_TITLE_LENGTH, "INVALID_TITLE");
         String normalizedCategory = normalizeRequiredText(
                 category, "CATEGORY_REQUIRED", "Category is required", MAX_CATEGORY_LENGTH, "INVALID_CATEGORY");
         String normalizedDescription = normalizeRequiredText(
-                description, "DESCRIPTION_REQUIRED", "Description is required", MAX_DESCRIPTION_LENGTH, "INVALID_DESCRIPTION");
-        String normalizedEmail = normalizeOptionalText(contactEmail, MAX_CONTACT_EMAIL_LENGTH, "INVALID_CONTACT_EMAIL");
-        if (normalizedEmail != null && !SIMPLE_EMAIL.matcher(normalizedEmail).matches()) {
+                description, "DESCRIPTION_REQUIRED", "Description is required", MAX_TICKET_DESCRIPTION_LENGTH,
+                "INVALID_DESCRIPTION");
+        assertTicketDescriptionNoWhitespace(normalizedDescription);
+        String normalizedContactName = normalizeRequiredText(
+                contactName, "CONTACT_NAME_REQUIRED", "Contact name is required", MAX_CONTACT_NAME_LENGTH,
+                "INVALID_CONTACT_NAME");
+        if (!CONTACT_NAME_LETTERS.matcher(normalizedContactName).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_NAME",
+                    "Contact name must contain only letters, spaces, and . ' - characters");
+        }
+        String normalizedEmail = normalizeRequiredText(
+                contactEmail, "CONTACT_EMAIL_REQUIRED", "Contact email is required", MAX_CONTACT_EMAIL_LENGTH,
+                "INVALID_CONTACT_EMAIL");
+        if (!SIMPLE_EMAIL.matcher(normalizedEmail).matches()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_EMAIL", "Contact email format is invalid");
         }
-        String normalizedPhone = normalizeOptionalText(contactPhone, MAX_CONTACT_PHONE_LENGTH, "INVALID_CONTACT_PHONE");
-        if (normalizedPhone != null && !SIMPLE_PHONE.matcher(normalizedPhone).matches()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_PHONE", "Contact phone format is invalid");
+        if (!EMAIL_ALLOWED_CHARS.matcher(normalizedEmail).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_EMAIL",
+                    "Contact email may contain only letters, numbers, @ and .");
+        }
+        String normalizedPhone = normalizeRequiredText(
+                contactPhone, "CONTACT_PHONE_REQUIRED", "Contact phone is required", MAX_CONTACT_PHONE_LENGTH,
+                "INVALID_CONTACT_PHONE");
+        if (!PHONE_DIGITS_ONLY.matcher(normalizedPhone).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_PHONE",
+                    "Contact phone must be exactly 10 digits");
         }
         Ticket t = Ticket.builder()
                 .reporter(reporter)
                 .resource(resource)
                 .locationText(normalizedLocation)
+                .title(normalizedTitle)
                 .category(normalizedCategory)
                 .description(normalizedDescription)
                 .priority(priority != null ? priority : TicketPriority.MEDIUM)
+                .contactName(normalizedContactName)
                 .contactEmail(normalizedEmail)
                 .contactPhone(normalizedPhone)
                 .status(TicketStatus.OPEN)
@@ -95,6 +133,118 @@ public class TicketService {
             }
         }
         return ticketRepository.findById(t.getId()).orElseThrow();
+    }
+
+    @Transactional
+    public Ticket updateTicketDetailsAsReporter(User reporter, Long ticketId, String locationText, String title,
+                                                String category, String description, TicketPriority priority,
+                                                String contactName, String contactEmail, String contactPhone,
+                                                boolean replaceAttachments, List<MultipartFile> files) {
+        Ticket t = get(ticketId);
+        assertReporterOwnsAndCanMutate(reporter, t);
+        if (files != null && files.size() > MAX_ATTACHMENTS) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "TOO_MANY_FILES", "Maximum 3 images per ticket");
+        }
+
+        String normalizedLocation = normalizeOptionalText(locationText, MAX_LOCATION_LENGTH, "INVALID_LOCATION");
+        if (normalizedLocation == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "LOCATION_REQUIRED", "Location is required");
+        }
+        String normalizedTitle = normalizeRequiredText(
+                title, "TITLE_REQUIRED", "Title is required", MAX_TITLE_LENGTH, "INVALID_TITLE");
+        String normalizedCategory = normalizeRequiredText(
+                category, "CATEGORY_REQUIRED", "Category is required", MAX_CATEGORY_LENGTH, "INVALID_CATEGORY");
+        String normalizedDescription = normalizeRequiredText(
+                description, "DESCRIPTION_REQUIRED", "Description is required", MAX_TICKET_DESCRIPTION_LENGTH,
+                "INVALID_DESCRIPTION");
+        assertTicketDescriptionNoWhitespace(normalizedDescription);
+        String normalizedContactName = normalizeRequiredText(
+                contactName, "CONTACT_NAME_REQUIRED", "Contact name is required", MAX_CONTACT_NAME_LENGTH,
+                "INVALID_CONTACT_NAME");
+        if (!CONTACT_NAME_LETTERS.matcher(normalizedContactName).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_NAME",
+                    "Contact name must contain only letters, spaces, and . ' - characters");
+        }
+        String normalizedEmail = normalizeRequiredText(
+                contactEmail, "CONTACT_EMAIL_REQUIRED", "Contact email is required", MAX_CONTACT_EMAIL_LENGTH,
+                "INVALID_CONTACT_EMAIL");
+        if (!SIMPLE_EMAIL.matcher(normalizedEmail).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_EMAIL", "Contact email format is invalid");
+        }
+        if (!EMAIL_ALLOWED_CHARS.matcher(normalizedEmail).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_EMAIL",
+                    "Contact email may contain only letters, numbers, @ and .");
+        }
+        String normalizedPhone = normalizeRequiredText(
+                contactPhone, "CONTACT_PHONE_REQUIRED", "Contact phone is required", MAX_CONTACT_PHONE_LENGTH,
+                "INVALID_CONTACT_PHONE");
+        if (!PHONE_DIGITS_ONLY.matcher(normalizedPhone).matches()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CONTACT_PHONE",
+                    "Contact phone must be exactly 10 digits");
+        }
+
+        t.setLocationText(normalizedLocation);
+        t.setTitle(normalizedTitle);
+        t.setCategory(normalizedCategory);
+        t.setDescription(normalizedDescription);
+        t.setPriority(priority != null ? priority : TicketPriority.MEDIUM);
+        t.setContactName(normalizedContactName);
+        t.setContactEmail(normalizedEmail);
+        t.setContactPhone(normalizedPhone);
+        ticketRepository.save(t);
+
+        if (replaceAttachments) {
+            removeTicketAttachmentsAndFiles(ticketId);
+            if (files != null && !files.isEmpty()) {
+                int n = Math.min(files.size(), MAX_ATTACHMENTS);
+                for (int i = 0; i < n; i++) {
+                    MultipartFile f = files.get(i);
+                    if (f == null || f.isEmpty()) {
+                        continue;
+                    }
+                    String path = fileStorageService.storeTicketAttachment(t.getId(), f);
+                    ticketAttachmentRepository.save(TicketAttachment.builder()
+                            .ticket(t)
+                            .originalFilename(f.getOriginalFilename())
+                            .storedPath(path)
+                            .contentType(f.getContentType())
+                            .sizeBytes(f.getSize())
+                            .build());
+                }
+            }
+        }
+        return ticketRepository.findById(t.getId()).orElseThrow();
+    }
+
+    @Transactional
+    public void deleteTicketAsReporter(User reporter, Long ticketId) {
+        Ticket t = get(ticketId);
+        assertReporterOwnsAndCanMutate(reporter, t);
+        removeTicketAttachmentsAndFiles(ticketId);
+        ticketCommentRepository.deleteByTicket_Id(ticketId);
+        ticketRepository.delete(t);
+    }
+
+    private void assertReporterOwnsAndCanMutate(User user, Ticket t) {
+        if (!t.getReporter().getId().equals(user.getId())) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "You can only change your own tickets");
+        }
+        if (!REPORTER_MUTABLE_STATUSES.contains(t.getStatus())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "NOT_EDITABLE",
+                    "This ticket can no longer be edited or deleted");
+        }
+    }
+
+    private void removeTicketAttachmentsAndFiles(Long ticketId) {
+        List<TicketAttachment> list = ticketAttachmentRepository.findByTicketId(ticketId);
+        for (TicketAttachment a : list) {
+            try {
+                Files.deleteIfExists(Path.of(a.getStoredPath()));
+            } catch (IOException ignored) {
+                /* best-effort */
+            }
+            ticketAttachmentRepository.delete(a);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -252,6 +402,13 @@ public class TicketService {
         boolean assignee = t.getAssignedTo() != null && t.getAssignedTo().getId().equals(user.getId());
         if (!staff && !reporter && !assignee) {
             throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Cannot access this ticket");
+        }
+    }
+
+    private static void assertTicketDescriptionNoWhitespace(String description) {
+        if (description.chars().anyMatch(Character::isWhitespace)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_DESCRIPTION",
+                    "Description must not contain spaces or line breaks");
         }
     }
 
