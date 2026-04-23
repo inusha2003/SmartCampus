@@ -1,9 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { api } from '../api/client'
+import { api, ticketAttachmentDownloadUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { RequireUser } from '../components/RequireUser'
-import { HiOutlineExclamationTriangle, HiOutlinePhoto, HiOutlineTicket, HiOutlineWrenchScrewdriver } from 'react-icons/hi2'
+import {
+  HiOutlineExclamationTriangle,
+  HiOutlinePencilSquare,
+  HiOutlinePhoto,
+  HiOutlineTicket,
+  HiOutlineWrenchScrewdriver,
+} from 'react-icons/hi2'
+import { TicketPhotoEditor } from '../components/TicketPhotoEditor'
 
 const LOCATION_OTHER = '__other__'
 
@@ -16,6 +23,22 @@ const RELATED_INCIDENT_TYPES = [
 ]
 
 /** SLIIT Malabe campus areas for ticket location. */
+const MAX_TICKET_PHOTOS = 3
+
+function formatTicketTimestamp(iso) {
+  if (!iso) return ''
+  try {
+    return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+  } catch {
+    return String(iso)
+  }
+}
+
+function isImageAttachment(a) {
+  if (a.contentType && a.contentType.startsWith('image/')) return true
+  return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(a.originalFilename || '')
+}
+
 const SLIIT_LOCATIONS = [
   'SLIIT Auditorium',
   'SLIIT Faculty of Business',
@@ -46,8 +69,36 @@ export function TicketsPage() {
   const [priority, setPriority] = useState('MEDIUM')
   const [contactEmail, setContactEmail] = useState('')
   const [contactPhone, setContactPhone] = useState('')
-  const [files, setFiles] = useState(null)
+  const [photoSlots, setPhotoSlots] = useState(() =>
+    Array.from({ length: MAX_TICKET_PHOTOS }, () => null),
+  )
+  const [photoEditorSlot, setPhotoEditorSlot] = useState(null)
   const [err, setErr] = useState(null)
+
+  const photoPreviewUrls = useMemo(
+    () => photoSlots.map((f) => (f ? URL.createObjectURL(f) : null)),
+    [photoSlots],
+  )
+
+  useEffect(() => {
+    return () => {
+      photoPreviewUrls.forEach((url) => {
+        if (url) URL.revokeObjectURL(url)
+      })
+    }
+  }, [photoPreviewUrls])
+
+  const setPhotoAt = (index, file) => {
+    setPhotoSlots((prev) => {
+      const next = [...prev]
+      next[index] = file
+      return next
+    })
+  }
+
+  const clearPhotoAt = (index) => {
+    setPhotoAt(index, null)
+  }
 
   const load = async () => {
     const { data: t } = await api.get('/api/tickets')
@@ -99,10 +150,7 @@ export function TicketsPage() {
       setErr('Contact phone format is invalid.')
       return
     }
-    if (files && files.length > 3) {
-      setErr('Maximum 3 images are allowed.')
-      return
-    }
+    const attachedPhotos = photoSlots.filter(Boolean)
     const fd = new FormData()
     fd.append('locationText', trimmedLocation)
     fd.append('category', trimmedIncident)
@@ -110,15 +158,13 @@ export function TicketsPage() {
     fd.append('priority', priority)
     if (trimmedEmail) fd.append('contactEmail', trimmedEmail)
     if (trimmedPhone) fd.append('contactPhone', trimmedPhone)
-    if (files) {
-      for (let i = 0; i < Math.min(files.length, 3); i++) {
-        fd.append('files', files[i])
-      }
+    for (const f of attachedPhotos) {
+      fd.append('files', f)
     }
     try {
       await api.post('/api/tickets', fd)
       setDescription('')
-      setFiles(null)
+      setPhotoSlots(Array.from({ length: MAX_TICKET_PHOTOS }, () => null))
       setRelatedIncident('')
       setLocationSelect('')
       setLocationOther('')
@@ -238,13 +284,66 @@ export function TicketsPage() {
             <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
           </div>
           <div className="field">
-            <label>Images (max 3)</label>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => setFiles(e.target.files)}
-            />
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#c6d7ff]">
+              Images (max 3)
+            </span>
+            <p className="small mb-3 max-w-[640px]">
+              Optional — use each slot for one photo. You can submit with any number of slots filled
+              (0–3).
+            </p>
+            <div className="ticket-photo-slots" aria-live="polite">
+              {photoSlots.map((file, i) => {
+                const previewUrl = photoPreviewUrls[i]
+                const inputId = `ticket-photo-slot-${i}`
+                return (
+                  <div key={i} className="ticket-photo-slot">
+                    <span className="ticket-photo-slot-title">Photo {i + 1}</span>
+                    <input
+                      id={inputId}
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const picked = e.target.files?.[0] ?? null
+                        setPhotoAt(i, picked)
+                        e.target.value = ''
+                      }}
+                    />
+                    {previewUrl ? (
+                      <div className="ticket-photo-slot-body">
+                        <img
+                          src={previewUrl}
+                          alt={`Photo ${i + 1} preview`}
+                          className="ticket-photo-slot-img"
+                        />
+                        <div className="ticket-photo-slot-actions">
+                          <button
+                            type="button"
+                            className="btn ghost ticket-photo-slot-edit"
+                            onClick={() => setPhotoEditorSlot(i)}
+                          >
+                            <HiOutlinePencilSquare className="inline-block h-4 w-4 align-text-bottom" aria-hidden />
+                            <span className="ml-1">Annotate</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn ghost ticket-photo-slot-remove"
+                            onClick={() => clearPhotoAt(i)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label htmlFor={inputId} className="ticket-photo-slot-add">
+                        <HiOutlinePhoto className="ticket-photo-slot-icon" aria-hidden />
+                        <span>Add photo</span>
+                      </label>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
           {err && <p className="error">{err}</p>}
           <button type="submit" className="btn primary">
@@ -253,21 +352,123 @@ export function TicketsPage() {
         </form>
       </div>
       <h2>Your tickets &amp; queue</h2>
-      {tickets.map((t) => (
-        <div key={t.id} className="card">
-          <span className="tag">{t.status.replaceAll('_', ' ')}</span>
-          <span className="tag warn">{t.priority}</span>
-          <h2 style={{ marginTop: '0.5rem', color: 'var(--sc-navy-900)' }}>
-            <Link to={`/tickets/${t.id}`} style={{ color: 'inherit' }}>
-              #{t.id} — {t.category}
-            </Link>
-          </h2>
-          <p className="small">
-            {t.description.slice(0, 160)}
-            {t.description.length > 160 ? '…' : ''}
-          </p>
-        </div>
-      ))}
+      {tickets.map((t) => {
+        const attachments = Array.isArray(t.attachments) ? t.attachments : []
+        const imageAtts = attachments.filter(isImageAttachment)
+        const otherAtts = attachments.filter((a) => !isImageAttachment(a))
+        return (
+          <div key={t.id} className="card ticket-queue-card">
+            <div className="ticket-queue-head">
+              <div className="ticket-queue-tags">
+                <span className="tag">{t.status.replaceAll('_', ' ')}</span>
+                <span className="tag warn">{t.priority}</span>
+              </div>
+              <h2 className="ticket-queue-title">
+                <Link to={`/tickets/${t.id}`}>Ticket #{t.id}</Link>
+              </h2>
+            </div>
+            <dl className="ticket-queue-meta">
+              <div className="ticket-queue-meta-row">
+                <dt>Related incident</dt>
+                <dd>{t.category}</dd>
+              </div>
+              <div className="ticket-queue-meta-row">
+                <dt>Location</dt>
+                <dd>{t.locationText?.trim() ? t.locationText : '—'}</dd>
+              </div>
+              {t.resourceName ? (
+                <div className="ticket-queue-meta-row">
+                  <dt>Related resource</dt>
+                  <dd>{t.resourceName}</dd>
+                </div>
+              ) : null}
+              <div className="ticket-queue-meta-row">
+                <dt>Submitted</dt>
+                <dd>{formatTicketTimestamp(t.createdAt) || '—'}</dd>
+              </div>
+              {t.contactEmail ? (
+                <div className="ticket-queue-meta-row">
+                  <dt>Contact email</dt>
+                  <dd>{t.contactEmail}</dd>
+                </div>
+              ) : null}
+              {t.contactPhone ? (
+                <div className="ticket-queue-meta-row">
+                  <dt>Contact phone</dt>
+                  <dd>{t.contactPhone}</dd>
+                </div>
+              ) : null}
+            </dl>
+            <div className="ticket-queue-block">
+              <h3 className="ticket-queue-block-title">Description</h3>
+              <p className="ticket-queue-description">{t.description || '—'}</p>
+            </div>
+            {t.resolutionNotes ? (
+              <div className="ticket-queue-block">
+                <h3 className="ticket-queue-block-title">Resolution notes</h3>
+                <p className="ticket-queue-description">{t.resolutionNotes}</p>
+              </div>
+            ) : null}
+            {imageAtts.length > 0 ? (
+              <div className="ticket-queue-block">
+                <h3 className="ticket-queue-block-title">Photos</h3>
+                <div className="ticket-queue-photo-grid">
+                  {imageAtts.map((a) => (
+                    <a
+                      key={a.id}
+                      className="ticket-queue-photo-link"
+                      href={ticketAttachmentDownloadUrl(t.id, a.id)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <img
+                        src={ticketAttachmentDownloadUrl(t.id, a.id)}
+                        alt={a.originalFilename || `Attachment ${a.id}`}
+                        className="ticket-queue-thumb"
+                        loading="lazy"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {otherAtts.length > 0 ? (
+              <div className="ticket-queue-block">
+                <h3 className="ticket-queue-block-title">Other attachments</h3>
+                <ul className="ticket-queue-file-list">
+                  {otherAtts.map((a) => (
+                    <li key={a.id}>
+                      <a
+                        href={ticketAttachmentDownloadUrl(t.id, a.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="small"
+                      >
+                        {a.originalFilename || `File ${a.id}`}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            <div className="ticket-queue-footer">
+              <Link to={`/tickets/${t.id}`} className="btn ghost">
+                Open full ticket
+              </Link>
+            </div>
+          </div>
+        )
+      })}
+      <TicketPhotoEditor
+        open={photoEditorSlot !== null}
+        file={photoEditorSlot !== null ? photoSlots[photoEditorSlot] : null}
+        onClose={() => setPhotoEditorSlot(null)}
+        onSave={(f) => {
+          const slot = photoEditorSlot
+          setPhotoEditorSlot(null)
+          if (slot !== null) setPhotoAt(slot, f)
+        }}
+      />
     </div>
     </RequireUser>
   )
