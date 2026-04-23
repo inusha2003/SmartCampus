@@ -2,12 +2,21 @@ $ErrorActionPreference = "Stop"
 
 # Ensure Maven is available for this shell session.
 if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
-  $defaultMavenHome = "C:\apache-maven\apache-maven-3.9.15"
-  if (Test-Path "$defaultMavenHome\bin\mvn.cmd") {
-    $env:MAVEN_HOME = $defaultMavenHome
-    $env:Path = "$env:MAVEN_HOME\bin;$env:Path"
+  $mavenBin = $null
+  if ($env:MAVEN_HOME -and (Test-Path (Join-Path $env:MAVEN_HOME "bin\mvn.cmd"))) {
+    $mavenBin = (Join-Path $env:MAVEN_HOME "bin")
+  }
+  if (-not $mavenBin) {
+    $defaultMavenHome = "C:\apache-maven\apache-maven-3.9.15"
+    if (Test-Path "$defaultMavenHome\bin\mvn.cmd") {
+      $env:MAVEN_HOME = $defaultMavenHome
+      $mavenBin = "$defaultMavenHome\bin"
+    }
+  }
+  if ($mavenBin) {
+    $env:Path = "$mavenBin;$env:Path"
   } else {
-    throw "Maven not found. Install Maven or update start-postgres.ps1 with your Maven path."
+    throw "Maven not found. Add Maven to PATH, set MAVEN_HOME to your Maven install (with bin\mvn.cmd under it), or update start-postgres.ps1 with your Maven path."
   }
 }
 
