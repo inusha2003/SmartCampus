@@ -1,0 +1,7 @@
+# Enable dev login without Google. Start with: --spring.profiles.active=dev
+app:
+  dev-auth-enabled: true
+
+logging:
+  level:
+    org.springframework.security: INFO

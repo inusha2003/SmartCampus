@@ -1,0 +1,191 @@
+@reference "tailwindcss";
+
+.app-shell {
+  @apply min-h-screen;
+  color: var(--sc-navy-900);
+}
+
+.top-nav {
+  @apply sticky top-0 z-20 flex flex-wrap items-center gap-4 px-4 py-3 backdrop-blur md:px-6;
+  border-bottom: 1px solid rgba(199, 255, 47, 0.24);
+  background:
+    linear-gradient(180deg, rgba(8, 15, 30, 0.96) 0%, rgba(7, 13, 27, 0.95) 100%),
+    linear-gradient(90deg, rgba(199, 255, 47, 0.06) 0%, rgba(120, 165, 255, 0.05) 100%);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+}
+
+.brand {
+  @apply inline-flex items-center gap-2 rounded-lg text-lg font-extrabold tracking-tight;
+  color: #f1f7ff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(199, 255, 47, 0.45);
+  background: rgba(10, 18, 36, 0.9);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.nav-links {
+  @apply flex flex-1 flex-wrap gap-1;
+}
+
+.nav-links a {
+  @apply inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition;
+  color: rgba(227, 238, 255, 0.88);
+}
+
+.nav-links a:hover {
+  background: rgba(199, 255, 47, 0.14);
+  color: #f4ffd7;
+}
+
+.nav-links a.active {
+  background: rgba(199, 255, 47, 0.2);
+  color: #f4ffd7;
+  box-shadow: inset 0 0 0 1px rgba(199, 255, 47, 0.42);
+}
+
+.nav-user {
+  @apply flex items-center gap-2;
+}
+
+.user-pill {
+  @apply flex flex-col rounded-xl px-3 py-1 text-sm leading-tight;
+  border: 1px solid rgba(199, 255, 47, 0.36);
+  background: rgba(8, 16, 32, 0.72);
+  color: #ecf3ff;
+}
+
+.user-pill small {
+  @apply text-[10px] font-semibold uppercase tracking-wide;
+  color: rgba(199, 255, 47, 0.86);
+}
+
+.main-content {
+  @apply mx-auto my-4 w-full max-w-6xl flex-1 px-4 py-6 md:my-6 md:px-6 md:py-8;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(199, 255, 47, 0.06), transparent 20%),
+    linear-gradient(180deg, rgba(11, 21, 41, 0.9) 0%, rgba(7, 13, 28, 0.9) 100%);
+  border: 1px solid rgba(137, 167, 244, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.45);
+}
+
+.muted {
+  color: rgba(220, 233, 255, 0.76);
+}
+
+/* Footer Styles */
+.footer {
+  @apply mt-12 w-full border-t px-4 py-12 md:px-6 md:py-16;
+  border-color: rgba(137, 167, 244, 0.22);
+  background:
+    radial-gradient(circle at 92% 15%, rgba(199, 255, 47, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(8, 14, 29, 0.96) 0%, rgba(4, 8, 18, 0.98) 100%);
+}
+
+.footer-content {
+  @apply mx-auto grid w-full max-w-6xl gap-8 md:grid-cols-4;
+}
+
+.footer-section {
+  @apply space-y-4;
+}
+
+.footer-section h3 {
+  @apply text-xl font-bold tracking-tight;
+  color: #eef4ff;
+}
+
+.footer-section h4 {
+  @apply text-sm font-semibold uppercase tracking-wider;
+  color: rgba(199, 255, 47, 0.88);
+}
+
+.footer-section p {
+  @apply text-sm leading-relaxed;
+  color: #aec2ee;
+  max-width: 260px;
+}
+
+.footer-section ul {
+  @apply space-y-2;
+  list-style: none;
+}
+
+.footer-section li a,
+.footer-section a {
+  @apply text-sm font-medium transition;
+  color: #d6e3ff;
+}
+
+.footer-section li a:hover,
+.footer-section a:hover {
+  color: var(--sc-orange-500);
+}
+
+.footer-socials {
+  @apply inline-flex gap-3;
+}
+
+.footer-socials a {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-lg transition;
+  background: rgba(10, 18, 36, 0.88);
+  border: 1px solid rgba(146, 174, 247, 0.3);
+  color: #dce8ff;
+}
+
+.footer-socials a:hover {
+  background: var(--sc-orange-500);
+  border-color: var(--sc-orange-500);
+  color: #07101d;
+}
+
+.footer-bottom {
+  @apply mx-auto mt-8 w-full max-w-6xl border-t pt-8;
+  border-color: rgba(146, 174, 247, 0.22);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-copyright p {
+  @apply text-xs font-medium;
+  color: #9fb4e4;
+}
+
+.footer-meta {
+  @apply flex items-center gap-2 text-xs;
+  color: #9fb4e4;
+}
+
+.footer-meta a {
+  @apply transition;
+  color: #d2e1ff;
+}
+
+.footer-meta a:hover {
+  color: var(--sc-orange-500);
+}
+
+@media (max-width: 768px) {
+  .footer {
+    @apply py-8;
+  }
+
+  .footer-content {
+    @apply grid-cols-2;
+  }
+
+  .footer-bottom {
+    @apply flex-col items-start;
+  }
+}
+
