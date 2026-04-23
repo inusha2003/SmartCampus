@@ -64,8 +64,8 @@ export function BookingsPage() {
       setErr('End time must be after start time.')
       return
     }
-    if (startDate.getTime() < Date.now() - 60000) {
-      setErr('Start time must be in the future.')
+    if (startDate.getTime() < Date.now()) {
+      setErr('Start time cannot be in the past. Please select a future date and time.')
       return
     }
     const durationHours = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60)
@@ -175,11 +175,23 @@ export function BookingsPage() {
           </div>
           <div className="field">
             <label>Start (local)</label>
-            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} required />
+            <input 
+              type="datetime-local" 
+              value={start} 
+              onChange={(e) => setStart(e.target.value)} 
+              min={new Date().toISOString().slice(0, 16)}
+              required 
+            />
           </div>
           <div className="field">
             <label>End (local)</label>
-            <input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} required />
+            <input 
+              type="datetime-local" 
+              value={end} 
+              onChange={(e) => setEnd(e.target.value)} 
+              min={start || new Date().toISOString().slice(0, 16)}
+              required 
+            />
           </div>
           <div className="field">
             <label>Purpose</label>

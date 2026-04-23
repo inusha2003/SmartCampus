@@ -55,8 +55,8 @@ public class BookingService {
         if (!endAt.isAfter(startAt)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_RANGE", "End time must be after start time");
         }
-        if (startAt.isBefore(Instant.now().minusSeconds(60))) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_START_TIME", "Start time must be in the future");
+        if (startAt.isBefore(Instant.now())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_START_TIME", "Start time cannot be in the past. Please select a future date and time.");
         }
         if (endAt.isAfter(startAt.plusSeconds(MAX_BOOKING_HOURS * 3600))) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_DURATION",
