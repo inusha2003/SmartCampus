@@ -1,16 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { api, fetchCsrf, getOAuthAuthorizationUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
-import { HiOutlineArrowRightCircle, HiOutlineKey, HiOutlineSparkles } from 'react-icons/hi2'
+import {
+  HiOutlineEnvelope,
+  HiOutlineEyeSlash,
+  HiOutlineSparkles,
+} from 'react-icons/hi2'
+import { FaGoogle } from 'react-icons/fa6'
 
 export function LoginPage() {
   const { user, refresh } = useAuth()
+  const [searchParams] = useSearchParams()
+  const oauthReturnFailed = searchParams.get('from') === 'oauth'
   const [email, setEmail] = useState('student@campus.local')
   const [name, setName] = useState('Demo Student')
   const [role, setRole] = useState('USER')
+  const [rememberMe, setRememberMe] = useState(true)
+  const [password, setPassword] = useState('')
   const [err, setErr] = useState(null)
   const [googleConfigured, setGoogleConfigured] = useState(true)
+  const [loggingIn, setLoggingIn] = useState(false)
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -63,40 +73,152 @@ export function LoginPage() {
     }
   }
 
+  const credentialLogin = async (e) => {
+    e.preventDefault()
+    setErr(null)
+    const emailValue = email.trim()
+    if (!emailValue || !password) {
+      setErr('Email and password are required.')
+      return
+    }
+
+    setLoggingIn(true)
+    const payload = { email: emailValue, username: emailValue, password, rememberMe }
+    const attempts = [
+      () => api.post('/api/auth/login', payload),
+      () => api.post('/api/auth/login', { username: emailValue, password, rememberMe }),
+      () => api.post('/api/auth/signin', payload),
+      () => api.post('/api/auth/signin', { username: emailValue, password, rememberMe }),
+      () => api.post('/api/login', payload),
+      () => api.post('/api/login', { username: emailValue, password, rememberMe }),
+      () => api.post('/login', payload),
+      () =>
+        api.post(
+          '/login',
+          new URLSearchParams({ username: emailValue, password }).toString(),
+          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        ),
+    ]
+
+    let ok = false
+    for (const attempt of attempts) {
+      try {
+        await fetchCsrf()
+        await attempt()
+        ok = true
+        break
+      } catch {
+        // try next endpoint
+      }
+    }
+    if (!ok) {
+      setErr('Email/password login failed. Check credentials or backend auth endpoint.')
+      setLoggingIn(false)
+      return
+    }
+    await refresh()
+    setLoggingIn(false)
+  }
+
   const showDev = import.meta.env.DEV
 
   return (
-    <div style={{ maxWidth: 440 }}>
-      <section className="hero-card rainbow mb-6">
-        <div className="relative z-10">
-          <p className="glass-chip">Welcome</p>
-          <h1 className="mt-3 gradient-title">Smart Campus Access Portal</h1>
-          <p className="small">
-            Secure sign-in with Google OAuth and role-based access to bookings, maintenance, and
-            notifications.
-          </p>
+    <div className="auth-shell split">
+      <section className="auth-card">
+        <div className="auth-header">
+          <p className="auth-brand">Smart Campus Hub</p>
+          <h1 className="auth-title">Log in to your account</h1>
+          <p className="small">Welcome back! Select your preferred sign-in method.</p>
         </div>
-      </section>
 
-      <h1 className="flex items-center gap-2">
-        <HiOutlineKey className="text-cyan-300" />
-        Sign in
-      </h1>
-      <p className="small">OAuth 2.0 with Google (production), or local dev accounts.</p>
-      <div className="card stack">
-        <button type="button" className="btn primary" onClick={google} disabled={!googleConfigured}>
-          <HiOutlineArrowRightCircle />
-          Continue with Google
-        </button>
+        <div className="auth-social-grid">
+          <button type="button" className="auth-social-btn" onClick={google} disabled={!googleConfigured}>
+            <FaGoogle />
+            <span>Google</span>
+          </button>
+        </div>
+
+        <div className="auth-divider">
+          <span>or continue with email</span>
+        </div>
+
+        <form onSubmit={(e) => void credentialLogin(e)}>
+          <div className="auth-input">
+            <HiOutlineEnvelope />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              aria-label="Email"
+            />
+          </div>
+          <div className="auth-input">
+            <HiOutlineEyeSlash />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              aria-label="Password"
+            />
+          </div>
+
+          <div className="auth-meta-row">
+            <label className="auth-checkbox">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span>Remember me</span>
+            </label>
+            <button type="button" className="auth-link-btn">
+              Forgot Password?
+            </button>
+          </div>
+
+          <button type="submit" className="btn primary auth-submit" disabled={loggingIn}>
+            {loggingIn ? 'Logging in…' : 'Log in'}
+          </button>
+        </form>
+
         <p className="small">
-          Configure <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> on the API.
+          New here? <Link to="/signup">Create an account</Link>
         </p>
+
         {!googleConfigured && (
           <p className="error">
             Google OAuth is currently disabled because the client credentials are missing or still set to placeholders.
           </p>
         )}
-      </div>
+        {oauthReturnFailed && (
+          <p className="error">
+            Google sign-in could not attach a session to this browser. Open the app at{' '}
+            <strong>http://localhost:5173</strong>, add{' '}
+            <code>http://localhost:5173/login/oauth2/code/google</code> in Google Cloud Console, keep{' '}
+            <code>VITE_API_URL</code> empty in dev, and set <code>VITE_DEV_PROXY_TARGET</code> to the{' '}
+            <strong>exact</strong> URL where Spring Boot is listening (often <code>http://localhost:8080</code> — if
+            your API uses another port, both sides must match or <code>/api/auth/me</code> will fail and you will see
+            this message).
+          </p>
+        )}
+      </section>
+      <section className="auth-card secondary">
+        <div className="auth-header">
+          <p className="auth-brand">New to Smart Campus?</p>
+          <h1 className="auth-title">Create your account</h1>
+          <p className="small">
+            Sign up once and get role-based access to dashboards, bookings, and ticket workflows.
+          </p>
+        </div>
+        <div className="stack">
+          <Link to="/signup" className="btn primary auth-submit">
+            Go to sign up
+          </Link>
+          <p className="small">Use Google in production, or development signup in local mode.</p>
+        </div>
+      </section>
       {showDev && (
         <div className="card">
           <h2 className="flex items-center gap-2">

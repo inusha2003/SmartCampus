@@ -61,6 +61,16 @@
   color: #ecf3ff;
 }
 
+.user-pill-link {
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.user-pill-link:hover {
+  border-color: rgba(199, 255, 47, 0.62);
+  background: rgba(11, 22, 43, 0.9);
+}
+
 .user-pill small {
   @apply text-[10px] font-semibold uppercase tracking-wide;
   color: rgba(199, 255, 47, 0.86);

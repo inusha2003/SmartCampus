@@ -270,4 +270,118 @@
     background: rgba(199, 255, 47, 0.14);
     color: #efffcd;
   }
+
+  .auth-shell {
+    @apply mx-auto w-full;
+    max-width: 500px;
+  }
+
+  .auth-shell.split {
+    max-width: 1080px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .auth-card {
+    @apply rounded-2xl p-6 shadow-lg;
+    background: rgba(9, 17, 34, 0.94);
+    border: 1px solid rgba(149, 179, 255, 0.24);
+  }
+
+  .auth-card.secondary {
+    background: rgba(10, 19, 37, 0.86);
+  }
+
+  .auth-header {
+    @apply mb-5;
+  }
+
+  .auth-brand {
+    @apply text-sm font-semibold;
+    color: #9fb9f5;
+  }
+
+  .auth-title {
+    @apply mb-2 mt-1 text-4xl;
+    line-height: 1.1;
+  }
+
+  .auth-social-grid {
+    @apply grid justify-items-center gap-3;
+  }
+
+  .auth-social-btn {
+    @apply inline-flex w-full max-w-64 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition;
+    border: 1px solid rgba(170, 191, 245, 0.35);
+    background: rgba(14, 24, 45, 0.82);
+    color: #eaf1ff;
+  }
+
+  .auth-social-btn:hover {
+    border-color: rgba(199, 255, 47, 0.55);
+    background: rgba(16, 29, 54, 0.9);
+  }
+
+  .auth-social-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .auth-divider {
+    @apply my-4 flex items-center text-xs;
+    color: #9ab0df;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid rgba(146, 174, 247, 0.27);
+  }
+
+  .auth-divider span {
+    @apply px-3;
+  }
+
+  .auth-input {
+    @apply mb-3 flex items-center gap-2 rounded-xl px-3 py-2;
+    border: 1px solid rgba(159, 181, 248, 0.33);
+    background: rgba(10, 18, 36, 0.88);
+    color: #b9cef8;
+  }
+
+  .auth-input input {
+    @apply w-full bg-transparent text-sm outline-none;
+    color: #edf3ff;
+  }
+
+  .auth-input input::placeholder {
+    color: rgba(187, 206, 250, 0.62);
+  }
+
+  .auth-meta-row {
+    @apply mb-3 mt-1 flex items-center justify-between gap-2;
+  }
+
+  .auth-checkbox {
+    @apply inline-flex items-center gap-2 text-sm;
+    color: #bdd0f6;
+  }
+
+  .auth-link-btn {
+    @apply cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold;
+    color: #8cb5ff;
+  }
+
+  .auth-submit {
+    @apply w-full justify-center;
+  }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { RequireUser } from '../components/RequireUser'
 import { HiOutlineBellAlert, HiOutlineCheckBadge, HiOutlineEnvelopeOpen } from 'react-icons/hi2'
 
 export function NotificationsPage() {
@@ -22,8 +22,6 @@ export function NotificationsPage() {
     if (user) void load().catch(() => {})
   }, [user])
 
-  if (!user) return <Navigate to="/login" replace />
-
   const mark = async (id) => {
     await api.patch(`/api/notifications/${id}/read`)
     await load()
@@ -35,6 +33,7 @@ export function NotificationsPage() {
   }
 
   return (
+    <RequireUser>
     <div>
       <section className="hero-card rainbow mb-6">
         <div className="hero-grid">
@@ -93,5 +92,6 @@ export function NotificationsPage() {
         </div>
       ))}
     </div>
+    </RequireUser>
   )
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { RequireUser } from '../components/RequireUser'
 import { HiOutlineExclamationTriangle, HiOutlinePhoto, HiOutlineTicket, HiOutlineWrenchScrewdriver } from 'react-icons/hi2'
 
 export function TicketsPage() {
@@ -37,8 +38,6 @@ export function TicketsPage() {
   useEffect(() => {
     if (user) void load().catch(() => setErr('Failed to load tickets'))
   }, [user])
-
-  if (!user) return <Navigate to="/login" replace />
 
   const submit = async (e) => {
     e.preventDefault()
@@ -108,6 +107,7 @@ export function TicketsPage() {
   }
 
   return (
+    <RequireUser>
     <div>
       <section className="hero-card rainbow mb-6">
         <div className="hero-grid">
@@ -227,5 +227,6 @@ export function TicketsPage() {
         </div>
       ))}
     </div>
+    </RequireUser>
   )
 }

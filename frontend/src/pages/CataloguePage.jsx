@@ -18,7 +18,7 @@ const splitAvailabilityWindows = (value) =>
 
 export function CataloguePage() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [items, setItems] = useState([])
   const [type, setType] = useState('')
   const [location, setLocation] = useState('')
@@ -44,6 +44,7 @@ export function CataloguePage() {
   }, [])
 
   const handleResourceClick = (resourceId) => {
+    if (authLoading) return
     if (user) {
       navigate(`/bookings?resourceId=${resourceId}`)
       return
@@ -149,7 +150,13 @@ export function CataloguePage() {
                 handleResourceClick(r.id)
               }
             }}
-            title={user ? 'Click to book this resource' : 'Sign in to book this resource'}
+            title={
+              authLoading
+                ? 'Checking session…'
+                : user
+                  ? 'Click to book this resource'
+                  : 'Sign in to book this resource'
+            }
           >
             <span className="tag">{r.type.replaceAll('_', ' ')}</span>
             {r.status !== 'ACTIVE' && <span className="tag bad">Out of service</span>}
@@ -167,7 +174,7 @@ export function CataloguePage() {
               </div>
             )}
             <p className="small" style={{ marginTop: '0.6rem', fontWeight: 700 }}>
-              {user ? 'Book this resource' : 'Sign in to book'}
+              {authLoading ? 'Checking session…' : user ? 'Book this resource' : 'Sign in to book'}
             </p>
           </div>
         ))}

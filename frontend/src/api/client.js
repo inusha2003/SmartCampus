@@ -10,7 +10,7 @@ if (trimmed !== '') {
   // Vite proxy: requests stay on the dev-server origin so session cookies match OAuth callback.
   baseURL = ''
 } else {
-  baseURL = 'http://localhost:8081'
+  baseURL = 'http://localhost:8080'
 }
 
 export const api = axios.create({

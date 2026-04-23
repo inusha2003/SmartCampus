@@ -4,6 +4,7 @@ import com.smartcampus.hub.domain.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
@@ -13,7 +14,9 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +35,9 @@ public class User {
 
     private String oauthProvider;
     private String oauthSubject;
+
+    /** BCrypt hash for email/password accounts; null for OAuth-only users. */
+    private String passwordHash;
 
     @Column(nullable = false)
     private Instant createdAt;
