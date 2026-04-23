@@ -154,6 +154,231 @@
     @apply min-h-24 resize-y;
   }
 
+  .ticket-photo-slots {
+    @apply grid max-w-[640px] gap-3;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 560px) {
+    .ticket-photo-slots {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ticket-photo-slot {
+    @apply flex min-h-40 flex-col gap-2 rounded-xl p-3;
+    border: 1px solid rgba(159, 181, 248, 0.33);
+    background: rgba(9, 17, 35, 0.55);
+  }
+
+  .ticket-photo-slot-title {
+    @apply text-[10px] font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+  }
+
+  .ticket-photo-slot-body {
+    @apply flex flex-1 flex-col gap-2;
+  }
+
+  .ticket-photo-slot-img {
+    @apply aspect-square w-full rounded-lg;
+    border: 1px solid rgba(159, 181, 248, 0.22);
+    object-fit: cover;
+    box-shadow: 0 8px 18px rgba(2, 8, 19, 0.35);
+  }
+
+  .ticket-photo-slot-add {
+    @apply flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-2 py-6 text-center text-sm font-medium transition;
+    border-color: rgba(159, 181, 248, 0.35);
+    color: #b7c9f1;
+  }
+
+  .ticket-photo-slot-add:hover {
+    border-color: rgba(199, 255, 47, 0.45);
+    color: #e8f0ff;
+    background: rgba(199, 255, 47, 0.06);
+  }
+
+  .ticket-photo-slot-icon {
+    @apply h-8 w-8 opacity-70;
+  }
+
+  .ticket-photo-slot-remove {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-photo-slot-actions {
+    @apply flex flex-col gap-2;
+  }
+
+  .ticket-photo-slot-edit {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-photo-editor-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+    background: rgba(3, 7, 15, 0.75);
+    backdrop-filter: blur(6px);
+  }
+
+  .ticket-photo-editor-dialog {
+    @apply max-h-[92vh] overflow-y-auto rounded-2xl p-5 shadow-2xl;
+    max-width: min(960px, 100%);
+    border: 1px solid rgba(149, 179, 255, 0.28);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.98) 0%, rgba(7, 13, 29, 0.98) 100%);
+  }
+
+  .ticket-photo-editor-title {
+    @apply mt-0 mb-2 text-lg font-semibold;
+    color: #e9f0ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-photo-editor-hint {
+    @apply mb-4;
+  }
+
+  .ticket-photo-editor-toolbar {
+    @apply mb-3 flex flex-wrap items-center gap-2;
+  }
+
+  .ticket-photo-editor-tool-label {
+    @apply text-xs font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+  }
+
+  .ticket-photo-editor-tool.active {
+    border-color: rgba(199, 255, 47, 0.65);
+    background: rgba(199, 255, 47, 0.12);
+    color: #f2ffc9;
+  }
+
+  .ticket-photo-editor-canvas-wrap {
+    @apply flex justify-center overflow-hidden rounded-xl;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: #050a14;
+  }
+
+  .ticket-photo-editor-canvas {
+    @apply block max-h-[60vh] max-w-full cursor-crosshair touch-none;
+  }
+
+  .ticket-photo-editor-actions {
+    @apply mt-4 flex flex-wrap justify-end gap-2;
+  }
+
+  .ticket-queue-card .ticket-queue-head {
+    @apply mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .ticket-queue-tags {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .ticket-queue-title {
+    @apply m-0 text-lg font-semibold tracking-tight;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-queue-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ticket-queue-title a:hover {
+    color: var(--sc-orange-500);
+  }
+
+  .ticket-queue-meta {
+    @apply mb-4 grid gap-2 sm:grid-cols-2;
+  }
+
+  .ticket-queue-meta-row {
+    @apply flex flex-col gap-0.5 rounded-lg px-3 py-2;
+    background: rgba(8, 15, 31, 0.65);
+    border: 1px solid rgba(159, 181, 248, 0.15);
+  }
+
+  .ticket-queue-meta-row dt {
+    @apply text-[10px] font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+    margin: 0;
+  }
+
+  .ticket-queue-meta-row dd {
+    @apply m-0 text-sm font-medium;
+    color: #e9f0ff;
+  }
+
+  .ticket-queue-block {
+    @apply mb-4;
+  }
+
+  .ticket-queue-block-title {
+    @apply m-0 mb-2 text-xs font-semibold uppercase tracking-wide;
+    color: #c6d7ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-queue-description {
+    @apply m-0 whitespace-pre-wrap rounded-xl px-3 py-2.5 text-sm leading-relaxed;
+    color: #b7c9f1;
+    border: 1px solid rgba(159, 181, 248, 0.2);
+    background: rgba(5, 10, 20, 0.55);
+  }
+
+  .ticket-queue-photo-grid {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .ticket-queue-photo-link {
+    @apply block overflow-hidden rounded-xl transition;
+    border: 1px solid rgba(159, 181, 248, 0.35);
+    box-shadow: 0 8px 20px rgba(2, 8, 19, 0.35);
+    max-width: 200px;
+  }
+
+  .ticket-queue-photo-link:hover {
+    border-color: rgba(199, 255, 47, 0.55);
+  }
+
+  .ticket-queue-thumb {
+    @apply m-0 block h-36 w-full max-w-[200px] object-cover;
+    vertical-align: middle;
+  }
+
+  .ticket-queue-file-list {
+    @apply m-0 list-inside list-disc space-y-1 pl-1;
+    color: #b7c9f1;
+  }
+
+  .ticket-queue-file-list a {
+    color: var(--sc-orange-500);
+  }
+
+  .ticket-queue-footer {
+    @apply mt-2 flex flex-wrap gap-2 border-t pt-3;
+    border-color: rgba(159, 181, 248, 0.15);
+  }
+
+  .ticket-detail-attachments-visual {
+    @apply flex flex-wrap gap-4;
+  }
+
+  .ticket-detail-attachment-cell {
+    @apply flex max-w-[220px] flex-col gap-2;
+  }
+
+  .ticket-detail-attachment-name {
+    @apply m-0 line-clamp-2 break-all;
+    color: #b7c9f1;
+  }
+
+  .ticket-detail-attachment-dl {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
   .row-actions {
     @apply mt-3 flex flex-wrap gap-2;
   }

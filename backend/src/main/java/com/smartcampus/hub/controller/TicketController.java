@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -40,11 +43,11 @@ public class TicketController {
             @RequestParam(required = false) TicketPriority priority,
             @RequestParam(required = false) String contactEmail,
             @RequestParam(required = false) String contactPhone,
-            @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+            @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         if (files != null && files.size() > 3) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "TOO_MANY_FILES", "Maximum 3 images per ticket");
         }
-        return TicketDto.from(ticketService.create(
+        Ticket created = ticketService.create(
                 CurrentUser.requireUser(),
                 resourceId,
                 locationText,
@@ -53,39 +56,37 @@ public class TicketController {
                 priority,
                 contactEmail,
                 contactPhone,
-                files));
+                files);
+        return toDto(created);
     }
 
     @GetMapping("/mine")
     public List<TicketDto> mine() {
-        return ticketService.listMine(CurrentUser.requireUser()).stream()
-                .map(TicketDto::from)
-                .toList();
+        return toDtoList(ticketService.listMine(CurrentUser.requireUser()));
     }
 
     @GetMapping
     public List<TicketDto> list() {
-        return ticketService.listAssignable(CurrentUser.requireUser()).stream()
-                .map(TicketDto::from)
-                .toList();
+        return toDtoList(ticketService.listAssignable(CurrentUser.requireUser()));
     }
 
     @GetMapping("/{id}")
     public TicketDto get(@PathVariable Long id) {
         Ticket t = ticketService.get(id);
         ticketService.assertCanReadTicket(CurrentUser.requireUser(), t);
-        return TicketDto.from(t);
+        return toDto(t);
     }
 
     @PutMapping("/{id}")
     public TicketDto update(@PathVariable Long id, @Valid @RequestBody UpdateTicketRequest req) {
-        return TicketDto.from(ticketService.updateTicket(
+        Ticket t = ticketService.updateTicket(
                 CurrentUser.requireUser(),
                 id,
                 req.status(),
                 req.assigneeUserId(),
                 req.resolutionNotes(),
-                req.rejectReason()));
+                req.rejectReason());
+        return toDto(t);
     }
 
     @GetMapping("/{id}/comments")
@@ -155,5 +156,28 @@ public class TicketController {
                         "inline; filename=\"" + att.getOriginalFilename().replace("\"", "") + "\"")
                 .contentType(mt)
                 .body(resource);
+    }
+
+    private TicketDto toDto(Ticket t) {
+        List<AttachmentDto> att = ticketAttachmentRepository.findByTicketId(t.getId()).stream()
+                .map(AttachmentDto::from)
+                .toList();
+        return TicketDto.from(t, att);
+    }
+
+    private List<TicketDto> toDtoList(List<Ticket> tickets) {
+        if (tickets.isEmpty()) {
+            return List.of();
+        }
+        List<Long> ids = tickets.stream().map(Ticket::getId).toList();
+        List<TicketAttachment> all = ticketAttachmentRepository.findAllByTicketIdIn(ids);
+        Map<Long, List<AttachmentDto>> byTicket = new HashMap<>();
+        for (TicketAttachment a : all) {
+            Long tid = a.getTicket().getId();
+            byTicket.computeIfAbsent(tid, k -> new ArrayList<>()).add(AttachmentDto.from(a));
+        }
+        return tickets.stream()
+                .map(t -> TicketDto.from(t, byTicket.getOrDefault(t.getId(), List.of())))
+                .toList();
     }
 }

@@ -5,6 +5,7 @@ import com.smartcampus.hub.domain.TicketStatus;
 import com.smartcampus.hub.entity.Ticket;
 
 import java.time.Instant;
+import java.util.List;
 
 public record TicketDto(
         Long id,
@@ -23,9 +24,15 @@ public record TicketDto(
         String assignedToEmail,
         String resolutionNotes,
         Instant createdAt,
-        Instant updatedAt) {
+        Instant updatedAt,
+        List<AttachmentDto> attachments) {
 
     public static TicketDto from(Ticket t) {
+        return from(t, List.of());
+    }
+
+    public static TicketDto from(Ticket t, List<AttachmentDto> attachments) {
+        List<AttachmentDto> safe = attachments == null ? List.of() : List.copyOf(attachments);
         return new TicketDto(
                 t.getId(),
                 t.getReporter().getId(),
@@ -43,6 +50,7 @@ public record TicketDto(
                 t.getAssignedTo() != null ? t.getAssignedTo().getEmail() : null,
                 t.getResolutionNotes(),
                 t.getCreatedAt(),
-                t.getUpdatedAt());
+                t.getUpdatedAt(),
+                safe);
     }
 }

@@ -62,3 +62,16 @@ api.interceptors.request.use(async (config) => {
 export function resetCsrf() {
   csrfToken = null
 }
+
+/**
+ * URL for viewing a ticket attachment (for `<img src>` etc.). Uses API base when set so images work
+ * when the SPA and API are on different origins.
+ */
+export function ticketAttachmentDownloadUrl(ticketId, attachmentId) {
+  const path = `/api/tickets/${ticketId}/attachments/${attachmentId}/download`
+  const b = api.defaults.baseURL
+  if (typeof b === 'string' && b.length > 0) {
+    return `${b.replace(/\/$/, '')}${path}`
+  }
+  return path
+}

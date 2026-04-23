@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { api } from '../api/client'
+import { api, ticketAttachmentDownloadUrl } from '../api/client'
+
+function isImageAttachment(a) {
+  if (a.contentType && a.contentType.startsWith('image/')) return true
+  return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(a.originalFilename || '')
+}
 import { useAuth } from '../auth/AuthContext'
 
 export function TicketDetailPage() {
@@ -158,15 +163,45 @@ export function TicketDetailPage() {
       {attachments.length > 0 && (
         <div className="card">
           <h2>Attachments</h2>
-          <ul>
-            {attachments.map((a) => (
-              <li key={a.id}>
-                <button type="button" className="btn ghost" onClick={() => void download(a)}>
-                  {a.originalFilename}
-                </button>
-              </li>
-            ))}
-          </ul>
+          {attachments.some(isImageAttachment) ? (
+            <div className="ticket-detail-attachments-visual">
+              {attachments.filter(isImageAttachment).map((a) => (
+                <div key={a.id} className="ticket-detail-attachment-cell">
+                  <a
+                    className="ticket-queue-photo-link"
+                    href={ticketAttachmentDownloadUrl(tid, a.id)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Open full size"
+                  >
+                    <img
+                      src={ticketAttachmentDownloadUrl(tid, a.id)}
+                      alt={a.originalFilename || `Attachment ${a.id}`}
+                      className="ticket-queue-thumb"
+                      loading="lazy"
+                    />
+                  </a>
+                  <p className="ticket-detail-attachment-name small">{a.originalFilename}</p>
+                  <button type="button" className="btn ghost ticket-detail-attachment-dl" onClick={() => void download(a)}>
+                    Download
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {attachments.some((a) => !isImageAttachment(a)) ? (
+            <ul className={`ticket-queue-file-list ${attachments.some(isImageAttachment) ? 'mt-4' : ''}`}>
+              {attachments
+                .filter((a) => !isImageAttachment(a))
+                .map((a) => (
+                  <li key={a.id}>
+                    <button type="button" className="btn ghost" onClick={() => void download(a)}>
+                      {a.originalFilename}
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          ) : null}
         </div>
       )}
       {canStaff && (
