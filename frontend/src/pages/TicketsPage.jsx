@@ -163,11 +163,9 @@ function runTicketFormValidation({
     else errors.location = 'Select a campus location.'
   } else if (trimmedLoc.length > maxLocation) errors.location = `Location must be at most ${maxLocation} characters.`
 
-  const desc = description.trim()
+  const desc = stripWhitespaceForTicketDescription(description, maxDescription)
   if (!desc) errors.description = 'Description is required.'
-  else if (/\s/.test(desc)) {
-    errors.description = 'Description cannot contain spaces or line breaks.'
-  } else if (desc.length > maxDescription) {
+  else if (desc.length > maxDescription) {
     errors.description = `Description must be at most ${maxDescription} characters.`
   }
 
@@ -192,6 +190,15 @@ function runTicketFormValidation({
   }
 
   return errors
+}
+
+/**
+ * Strip Unicode whitespace to match backend `Character.isWhitespace` rules on descriptions.
+ * (Broader than `/\s/g`, which can miss some code points browsers allow in pasted text.)
+ */
+function stripWhitespaceForTicketDescription(s, maxLen) {
+  const cleaned = String(s ?? '').replace(/\p{White_Space}/gu, '')
+  return cleaned.slice(0, maxLen)
 }
 
 const SLIIT_LOCATIONS = [
@@ -314,7 +321,7 @@ export function TicketsPage() {
     setLocationOther(lo)
     setTitle(t.title || '')
     setRelatedIncident(t.category || '')
-    setDescription(t.description || '')
+    setDescription(stripWhitespaceForTicketDescription(t.description || '', MAX_DESCRIPTION))
     setPriority(t.priority || 'MEDIUM')
     setContactName(t.contactName || '')
     setContactEmail(t.contactEmail || '')
@@ -375,7 +382,7 @@ export function TicketsPage() {
     const trimmedLocation =
       locationSelect === LOCATION_OTHER ? locationOther.trim() : locationSelect.trim()
     const trimmedTitle = title.trim()
-    const trimmedDescription = description.trim()
+    const trimmedDescription = stripWhitespaceForTicketDescription(description, MAX_DESCRIPTION)
     const trimmedEmail = contactEmail.trim()
     const trimmedPhone = contactPhone.trim()
     const trimmedContactName = contactName.trim()
@@ -416,17 +423,33 @@ export function TicketsPage() {
 
     try {
       if (isEdit) {
-        await api.patch(`/api/tickets/${editingTicketId}`, fd)
+        try {
+          await api.post(`/api/tickets/${editingTicketId}/reporter`, fd)
+        } catch (first) {
+          // Older API builds only have PATCH /api/tickets/{id} (multipart); POST …/reporter returns 404.
+          if (first?.response?.status === 404) {
+            await api.patch(`/api/tickets/${editingTicketId}`, fd)
+          } else {
+            throw first
+          }
+        }
       } else {
         await api.post('/api/tickets', fd)
       }
       resetFormToNew()
       await load()
-    } catch {
+    } catch (e) {
+      const d = e?.response?.data
+      let backend = ''
+      if (d && typeof d === 'object') {
+        if (typeof d.error === 'string') backend = d.error
+        else if (typeof d.message === 'string') backend = d.message
+      }
       setErr(
-        isEdit
-          ? 'Could not update ticket (check fields and images).'
-          : 'Could not create ticket (max 3 images, check fields).',
+        backend ||
+          (isEdit
+            ? 'Could not update ticket (check fields and images).'
+            : 'Could not create ticket (max 3 images, check fields).'),
       )
     }
   }
@@ -562,7 +585,7 @@ export function TicketsPage() {
               value={description}
               maxLength={MAX_DESCRIPTION}
               onChange={(e) => {
-                const v = e.target.value.replace(/\s/g, '').slice(0, MAX_DESCRIPTION)
+                const v = stripWhitespaceForTicketDescription(e.target.value, MAX_DESCRIPTION)
                 setDescription(v)
                 clearFieldError('description')
               }}
