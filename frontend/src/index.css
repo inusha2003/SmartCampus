@@ -154,6 +154,18 @@
     @apply min-h-24 resize-y;
   }
 
+  .field.field-invalid input,
+  .field.field-invalid select,
+  .field.field-invalid textarea {
+    border-color: rgba(255, 130, 150, 0.75);
+    --tw-ring-color: rgba(255, 130, 150, 0.35);
+  }
+
+  .field-error {
+    @apply mt-1 text-xs font-medium;
+    color: #ffb3bf;
+  }
+
   .ticket-photo-slots {
     @apply grid max-w-[640px] gap-3;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -311,6 +323,10 @@
     color: #e9f0ff;
   }
 
+  .ticket-queue-meta-row-wide {
+    grid-column: 1 / -1;
+  }
+
   .ticket-queue-block {
     @apply mb-4;
   }
@@ -377,6 +393,12 @@
 
   .ticket-detail-attachment-dl {
     @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-detail-title-text {
+    @apply mb-2 mt-0 text-base font-semibold leading-snug;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
   }
 
   .row-actions {
