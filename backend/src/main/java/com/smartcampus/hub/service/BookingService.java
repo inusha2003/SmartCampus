@@ -207,6 +207,19 @@ public class BookingService {
         return bookingRepository.save(b);
     }
 
+    @Transactional
+    public void deletePending(User requester, Long bookingId) {
+        Booking b = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "NOT_FOUND", "Booking not found"));
+        if (!b.getRequester().getId().equals(requester.getId())) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Not your booking");
+        }
+        if (b.getStatus() != BookingStatus.PENDING) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_STATE", "Only pending bookings can be deleted");
+        }
+        bookingRepository.delete(b);
+    }
+
     private String normalizeOptionalText(String value, int maxLen, String errorCode) {
         if (value == null) {
             return null;
