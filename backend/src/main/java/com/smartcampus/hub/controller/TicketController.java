@@ -93,7 +93,39 @@ public class TicketController {
         return toDto(t);
     }
 
-    /** Reporter updates ticket details (OPEN / IN_PROGRESS only). Optional image replace via multipart. */
+    /**
+     * Reporter updates ticket details (OPEN / IN_PROGRESS only). Optional image replace via multipart.
+     * <p>POST …/reporter is preferred: some clients and proxies mishandle PATCH with multipart form data.
+     * PATCH on the ticket id is kept for compatibility.
+     */
+    @PostMapping(value = "/{id}/reporter", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public TicketDto postDetailsAsReporter(
+            @PathVariable Long id,
+            @RequestParam String locationText,
+            @RequestParam String title,
+            @RequestParam String category,
+            @RequestParam String description,
+            @RequestParam(required = false) TicketPriority priority,
+            @RequestParam String contactName,
+            @RequestParam String contactEmail,
+            @RequestParam String contactPhone,
+            @RequestParam(defaultValue = "false") boolean replaceAttachments,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+        return patchDetailsAsReporter(
+                id,
+                locationText,
+                title,
+                category,
+                description,
+                priority,
+                contactName,
+                contactEmail,
+                contactPhone,
+                replaceAttachments,
+                files);
+    }
+
+    /** @see #postDetailsAsReporter(Long, String, String, String, String, TicketPriority, String, String, String, boolean, List) */
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public TicketDto patchDetailsAsReporter(
             @PathVariable Long id,
