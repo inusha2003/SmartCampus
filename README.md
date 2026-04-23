@@ -76,13 +76,11 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** (use this host, or register **127.0.0.1** separately in Google — see below).
+Open **http://localhost:5173** for local dev (keeps OAuth redirect URIs and session cookies aligned).
 
 **Google OAuth (local dev):** The Vite dev server **proxies** `/api`, `/oauth2`, and `/login` to the API (default `http://localhost:8080` via `VITE_DEV_PROXY_TARGET`). That way the session cookie is set for the **same origin** as the React app, and sign-in completes instead of bouncing back to the login page.
 
-- In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), set **Authorized redirect URI** to:
-  - `http://localhost:5173/login/oauth2/code/google`
-  - (optional) `http://127.0.0.1:5173/login/oauth2/code/google` if you use that URL in the browser.
+- In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), set **Authorized redirect URI** to `http://localhost:5173/login/oauth2/code/google`.
 - Leave `VITE_API_URL` **empty** in dev (see `frontend/.env.development`). Only set `VITE_API_URL` if you deploy the built SPA against a separate API host.
 
 - Use **Continue with Google** once OAuth credentials are configured.

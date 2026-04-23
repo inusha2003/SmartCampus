@@ -91,7 +91,7 @@ export function AdminResourcesPage() {
   const MAX_NAME = 120
   const MAX_LOCATION = 200
   const MAX_WINDOWS = 2000
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [items, setItems] = useState([])
   const [name, setName] = useState('')
   const [type, setType] = useState('LECTURE_HALL')
@@ -123,6 +123,13 @@ export function AdminResourcesPage() {
     if (user?.role === 'ADMIN') void load().catch(() => setErr('Load failed'))
   }, [user])
 
+  if (authLoading) {
+    return (
+      <div className="card" style={{ maxWidth: 480 }}>
+        <p className="small">Checking your session…</p>
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== 'ADMIN') return <Navigate to="/" replace />
 

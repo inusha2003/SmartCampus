@@ -6,6 +6,7 @@ import {
   HiOutlineClipboardDocumentList,
   HiOutlineSquares2X2,
   HiOutlineWrenchScrewdriver,
+  HiOutlineUsers,
 } from 'react-icons/hi2'
 import { Footer } from './Footer'
 import './layout.css'
@@ -26,7 +27,7 @@ export function Layout() {
           <span>Smart Campus Hub</span>
         </Link>
         <nav className="nav-links">
-          <NavLink to="/" end>
+          <NavLink to="/catalogue">
             <HiOutlineSquares2X2 />
             Catalogue
           </NavLink>
@@ -54,6 +55,10 @@ export function Layout() {
                     <HiOutlineSquares2X2 />
                     Admin: resources
                   </NavLink>
+                  <NavLink to="/admin/users">
+                    <HiOutlineUsers />
+                    Admin: users
+                  </NavLink>
                 </>
               )}
             </>
@@ -64,18 +69,23 @@ export function Layout() {
             <span className="muted">…</span>
           ) : user ? (
             <>
-              <span className="user-pill" title={user.email}>
+              <Link to="/profile" className="user-pill user-pill-link" title={user.email}>
                 {user.displayName}
                 <small>{user.role}</small>
-              </span>
+              </Link>
               <button type="button" className="btn ghost" onClick={() => void logout()}>
                 Sign out
               </button>
             </>
           ) : (
-            <Link to="/login" className="btn primary">
-              Sign in
-            </Link>
+            <>
+              <Link to="/signup" className="btn ghost">
+                Sign up
+              </Link>
+              <Link to="/login" className="btn primary">
+                Sign in
+              </Link>
+            </>
           )}
         </div>
       </header>

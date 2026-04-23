@@ -6,7 +6,7 @@ import { HiOutlineClipboardDocumentList, HiOutlineClock, HiOutlineXCircle } from
 
 export function AdminBookingsPage() {
   const MAX_REASON = 500
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [bookings, setBookings] = useState([])
   const [filter, setFilter] = useState('PENDING')
   const [err, setErr] = useState(null)
@@ -21,6 +21,13 @@ export function AdminBookingsPage() {
     if (user?.role === 'ADMIN') void load().catch(() => setErr('Failed to load'))
   }, [user, filter])
 
+  if (authLoading) {
+    return (
+      <div className="card" style={{ maxWidth: 480 }}>
+        <p className="small">Checking your session…</p>
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== 'ADMIN') return <Navigate to="/" replace />
 

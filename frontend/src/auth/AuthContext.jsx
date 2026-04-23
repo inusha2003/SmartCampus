@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { api, fetchCsrf, resetCsrf } from '../api/client'
 
 const AuthContext = createContext(undefined)
@@ -6,26 +6,38 @@ const AuthContext = createContext(undefined)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const refreshInFlight = useRef(null)
 
   const refresh = useCallback(async () => {
-    try {
-      const { data } = await api.get('/api/auth/me')
-      setUser(data)
-      try {
-        await fetchCsrf()
-      } catch {
-        /* ignore csrf refresh errors here */
-      }
-      return data
-    } catch {
-      setUser(null)
-      return null
-    } finally {
-      setLoading(false)
+    if (refreshInFlight.current) {
+      return refreshInFlight.current
     }
+    const run = (async () => {
+      try {
+        const { data } = await api.get('/api/auth/me')
+        setUser(data)
+        try {
+          await fetchCsrf()
+        } catch {
+          /* ignore csrf refresh errors here */
+        }
+        return data
+      } catch {
+        setUser(null)
+        return null
+      } finally {
+        setLoading(false)
+        refreshInFlight.current = null
+      }
+    })()
+    refreshInFlight.current = run
+    return run
   }, [])
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/auth/callback') {
+      return
+    }
     void refresh()
   }, [refresh])
 

@@ -13,6 +13,10 @@ function backendProxy(target) {
         if (host) {
           proxyReq.setHeader('X-Forwarded-Host', host)
           proxyReq.setHeader('X-Forwarded-Proto', req.headers['x-forwarded-proto'] || 'http')
+          const portMatch = host.match(/:(\d+)$/)
+          if (portMatch) {
+            proxyReq.setHeader('X-Forwarded-Port', portMatch[1])
+          }
         }
       })
       proxy.on('error', (err, _req, res) => {
@@ -36,7 +40,7 @@ function backendProxy(target) {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const proxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8081'
+  const proxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
 
   return {
     plugins: [react(), tailwindcss()],

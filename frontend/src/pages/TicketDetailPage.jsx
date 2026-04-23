@@ -6,7 +6,7 @@ import { useAuth } from '../auth/AuthContext'
 export function TicketDetailPage() {
   const MAX_TEXT = 4000
   const { id } = useParams()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [ticket, setTicket] = useState(null)
   const [comments, setComments] = useState([])
   const [attachments, setAttachments] = useState([])
@@ -42,6 +42,13 @@ export function TicketDetailPage() {
     if (user && id) void load().catch(() => setErr('Cannot load ticket'))
   }, [user, id])
 
+  if (authLoading) {
+    return (
+      <div className="card" style={{ maxWidth: 480 }}>
+        <p className="small">Checking your session…</p>
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/login" replace />
   if (!ticket) {
     return err ? <p className="error">{err}</p> : <p className="small">Loading…</p>

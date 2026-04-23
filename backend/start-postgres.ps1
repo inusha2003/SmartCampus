@@ -49,12 +49,14 @@ if (-not $env:SPRING_PROFILES_ACTIVE) {
 }
 
 if (-not $env:SERVER_PORT) {
-  $env:SERVER_PORT = "8081"
+  # Must match frontend/.env.development VITE_DEV_PROXY_TARGET (Vite defaults to http://localhost:8080).
+  $env:SERVER_PORT = "8080"
 }
 
 Write-Host "Using profile: $env:SPRING_PROFILES_ACTIVE"
 Write-Host "Using port: $env:SERVER_PORT"
 Write-Host "Database URL: $env:DATABASE_URL"
+Write-Host "Frontend dev: set VITE_DEV_PROXY_TARGET=http://localhost:$($env:SERVER_PORT) in frontend/.env.development (or change SERVER_PORT here)."
 
 # Stop anything already listening on the API port.
 Get-NetTCPConnection -LocalPort ([int]$env:SERVER_PORT) -State Listen -ErrorAction SilentlyContinue |

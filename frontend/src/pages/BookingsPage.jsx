@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { RequireUser } from '../components/RequireUser'
 import { HiOutlineCalendarDays, HiOutlineCheckCircle, HiOutlineClock, HiOutlineXCircle } from 'react-icons/hi2'
 
 function statusClass(s) {
@@ -45,8 +46,6 @@ export function BookingsPage() {
       setResourceId(String(preselectedResourceId))
     }
   }, [preselectedResourceId, resources])
-
-  if (!user) return <Navigate to="/login" replace />
 
   const submit = async (e) => {
     e.preventDefault()
@@ -117,6 +116,7 @@ export function BookingsPage() {
   }
 
   return (
+    <RequireUser>
     <div>
       <section className="hero-card rainbow mb-6">
         <div className="hero-grid">
@@ -220,5 +220,6 @@ export function BookingsPage() {
         </div>
       ))}
     </div>
+    </RequireUser>
   )
 }
