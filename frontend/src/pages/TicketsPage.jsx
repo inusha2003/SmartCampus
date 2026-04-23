@@ -5,6 +5,30 @@ import { useAuth } from '../auth/AuthContext'
 import { RequireUser } from '../components/RequireUser'
 import { HiOutlineExclamationTriangle, HiOutlinePhoto, HiOutlineTicket, HiOutlineWrenchScrewdriver } from 'react-icons/hi2'
 
+const LOCATION_OTHER = '__other__'
+
+const RELATED_INCIDENT_TYPES = [
+  'IT Support',
+  'Maintenance',
+  'Electrical Issues',
+  'Cleaning and Waste',
+  'Fire',
+]
+
+/** SLIIT Malabe campus areas for ticket location. */
+const SLIIT_LOCATIONS = [
+  'SLIIT Auditorium',
+  'SLIIT Faculty of Business',
+  'SLIIT Computing Faculty',
+  'SLIIT Engineering Faculty',
+  'SLIIT Grounds / outdoor areas',
+  'SLIIT Library',
+  'SLIIT Main Building',
+  'SLIIT Parking',
+  'SLIIT Sports complex',
+  'SLIIT Student center / cafeteria',
+]
+
 export function TicketsPage() {
   const MAX_CATEGORY = 120
   const MAX_LOCATION = 500
@@ -15,10 +39,9 @@ export function TicketsPage() {
   const PHONE_RE = /^[+0-9()\-\s]{7,25}$/
   const { user } = useAuth()
   const [tickets, setTickets] = useState([])
-  const [resources, setResources] = useState([])
-  const [resourceId, setResourceId] = useState('')
-  const [locationText, setLocationText] = useState('')
-  const [category, setCategory] = useState('FACILITIES')
+  const [relatedIncident, setRelatedIncident] = useState('')
+  const [locationSelect, setLocationSelect] = useState('')
+  const [locationOther, setLocationOther] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('MEDIUM')
   const [contactEmail, setContactEmail] = useState('')
@@ -27,12 +50,8 @@ export function TicketsPage() {
   const [err, setErr] = useState(null)
 
   const load = async () => {
-    const [{ data: t }, { data: r }] = await Promise.all([
-      api.get('/api/tickets'),
-      api.get('/api/resources'),
-    ])
+    const { data: t } = await api.get('/api/tickets')
     setTickets(t)
-    setResources(r)
   }
 
   useEffect(() => {
@@ -42,21 +61,22 @@ export function TicketsPage() {
   const submit = async (e) => {
     e.preventDefault()
     setErr(null)
-    const trimmedLocation = locationText.trim()
-    const trimmedCategory = category.trim()
+    const trimmedLocation =
+      locationSelect === LOCATION_OTHER ? locationOther.trim() : locationSelect.trim()
+    const trimmedIncident = relatedIncident.trim()
     const trimmedDescription = description.trim()
     const trimmedEmail = contactEmail.trim()
     const trimmedPhone = contactPhone.trim()
-    if (!resourceId && !trimmedLocation) {
-      setErr('Choose a related resource or provide a location/area.')
+    if (!trimmedIncident) {
+      setErr('Select a related incident.')
       return
     }
-    if (!trimmedCategory) {
-      setErr('Category is required.')
+    if (trimmedIncident.length > MAX_CATEGORY) {
+      setErr(`Related incident must be at most ${MAX_CATEGORY} characters.`)
       return
     }
-    if (trimmedCategory.length > MAX_CATEGORY) {
-      setErr(`Category must be at most ${MAX_CATEGORY} characters.`)
+    if (!trimmedLocation) {
+      setErr('Select a campus location.')
       return
     }
     if (trimmedLocation.length > MAX_LOCATION) {
@@ -84,9 +104,8 @@ export function TicketsPage() {
       return
     }
     const fd = new FormData()
-    if (resourceId) fd.append('resourceId', resourceId)
-    if (trimmedLocation) fd.append('locationText', trimmedLocation)
-    fd.append('category', trimmedCategory)
+    fd.append('locationText', trimmedLocation)
+    fd.append('category', trimmedIncident)
     fd.append('description', trimmedDescription)
     fd.append('priority', priority)
     if (trimmedEmail) fd.append('contactEmail', trimmedEmail)
@@ -100,6 +119,9 @@ export function TicketsPage() {
       await api.post('/api/tickets', fd)
       setDescription('')
       setFiles(null)
+      setRelatedIncident('')
+      setLocationSelect('')
+      setLocationOther('')
       await load()
     } catch {
       setErr('Could not create ticket (max 3 images, check fields).')
@@ -152,23 +174,43 @@ export function TicketsPage() {
         <h2>Report an issue</h2>
         <form onSubmit={(e) => void submit(e)}>
           <div className="field">
-            <label>Related resource (optional)</label>
-            <select value={resourceId} onChange={(e) => setResourceId(e.target.value)}>
-              <option value="">—</option>
-              {resources.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
+            <label>Related incident</label>
+            <select value={relatedIncident} onChange={(e) => setRelatedIncident(e.target.value)}>
+              <option value="">Select incident</option>
+              {RELATED_INCIDENT_TYPES.map((name) => (
+                <option key={name} value={name}>
+                  {name}
                 </option>
               ))}
             </select>
           </div>
           <div className="field">
-            <label>Location / area (if no resource)</label>
-            <input value={locationText} onChange={(e) => setLocationText(e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Category</label>
-            <input value={category} onChange={(e) => setCategory(e.target.value)} required />
+            <label>Location / area</label>
+            <select
+              value={locationSelect}
+              onChange={(e) => {
+                const v = e.target.value
+                setLocationSelect(v)
+                if (v !== LOCATION_OTHER) setLocationOther('')
+              }}
+            >
+              <option value="">Select a location</option>
+              {SLIIT_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+              <option value={LOCATION_OTHER}>Other (describe below)</option>
+            </select>
+            {locationSelect === LOCATION_OTHER && (
+              <input
+                className="mt-2"
+                value={locationOther}
+                onChange={(e) => setLocationOther(e.target.value)}
+                placeholder="e.g. room number or area not listed"
+                aria-label="Custom location description"
+              />
+            )}
           </div>
           <div className="field">
             <label>Description</label>
