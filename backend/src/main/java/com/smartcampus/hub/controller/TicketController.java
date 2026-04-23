@@ -244,7 +244,7 @@ public class TicketController {
     }
 
     private TicketDto toDto(Ticket t) {
-        List<AttachmentDto> att = ticketAttachmentRepository.findByTicketId(t.getId()).stream()
+        List<AttachmentDto> att = ticketAttachmentRepository.findByTicket_IdOrderByIdAsc(t.getId()).stream()
                 .map(AttachmentDto::from)
                 .toList();
         return TicketDto.from(t, att);

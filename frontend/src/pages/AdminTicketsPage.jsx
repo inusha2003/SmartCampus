@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { api, ticketAttachmentDownloadUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
@@ -50,6 +50,24 @@ function priorityAccent(priority) {
   return 'admin-tickets-queue-card--default'
 }
 
+const DISPLAY_HEADLINE_MAX = 100
+
+/**
+ * Prefer stored title; legacy rows may have empty title — then show description preview or category.
+ */
+function ticketDisplayHeadline(ticket) {
+  const head = typeof ticket?.title === 'string' ? ticket.title.trim() : ''
+  if (head) return head
+  const desc = (ticket?.description || '').trim()
+  if (desc) {
+    return desc.length <= DISPLAY_HEADLINE_MAX ? desc : `${desc.slice(0, DISPLAY_HEADLINE_MAX - 1)}…`
+  }
+  const cat = (ticket?.category || '').trim()
+  if (cat) return cat
+  if (ticket?.id != null) return `Request #${ticket.id}`
+  return 'Ticket'
+}
+
 export function AdminTicketsPage() {
   const { user, loading: authLoading } = useAuth()
   const [list, setList] = useState([])
@@ -61,9 +79,13 @@ export function AdminTicketsPage() {
   const [quickFilter, setQuickFilter] = useState('all')
   const [panelStatus, setPanelStatus] = useState('')
   const [panelAssignee, setPanelAssignee] = useState('')
-  const [panelResolution, setPanelResolution] = useState('')
   const [err, setErr] = useState(null)
   const [saving, setSaving] = useState(false)
+  const listRef = useRef([])
+
+  useEffect(() => {
+    listRef.current = list
+  }, [list])
 
   const loadList = useCallback(async () => {
     const { data } = await api.get('/api/tickets')
@@ -76,10 +98,23 @@ export function AdminTicketsPage() {
       return
     }
     const { data } = await api.get(`/api/tickets/${id}`)
-    setDetail(data)
-    setPanelStatus(data.status || 'OPEN')
-    setPanelAssignee(data.assignedToId != null ? String(data.assignedToId) : '')
-    setPanelResolution(data.resolutionNotes || '')
+    const fromList = listRef.current.find((t) => Number(t.id) === Number(id))
+    let attachments = Array.isArray(data.attachments) ? data.attachments : []
+    if (attachments.length === 0 && Array.isArray(fromList?.attachments) && fromList.attachments.length > 0) {
+      attachments = fromList.attachments
+    }
+    if (attachments.length === 0) {
+      try {
+        const { data: attOnly } = await api.get(`/api/tickets/${id}/attachments`)
+        if (Array.isArray(attOnly) && attOnly.length > 0) attachments = attOnly
+      } catch {
+        /* keep empty */
+      }
+    }
+    const merged = { ...data, attachments }
+    setDetail(merged)
+    setPanelStatus(merged.status || 'OPEN')
+    setPanelAssignee(merged.assignedToId != null ? String(merged.assignedToId) : '')
   }, [])
 
   useEffect(() => {
@@ -106,9 +141,16 @@ export function AdminTicketsPage() {
       rows = rows.filter((t) => {
         const idStr = String(t.id)
         const title = (t.title || '').toLowerCase()
+        const desc = (t.description || '').toLowerCase()
         const email = (t.reporterEmail || '').toLowerCase()
         const contact = (t.contactEmail || '').toLowerCase()
-        return idStr.includes(q) || title.includes(q) || email.includes(q) || contact.includes(q)
+        return (
+          idStr.includes(q) ||
+          title.includes(q) ||
+          desc.includes(q) ||
+          email.includes(q) ||
+          contact.includes(q)
+        )
       })
     }
     if (statusFilter) {
@@ -147,13 +189,11 @@ export function AdminTicketsPage() {
   const saveStaff = async () => {
     if (!detail) return
     setErr(null)
-    const trimmedRes = panelResolution.trim()
-    if (trimmedRes.length > MAX_TEXT) {
-      setErr(`Resolution notes must be at most ${MAX_TEXT} characters.`)
-      return
-    }
-    if ((panelStatus === 'RESOLVED' || panelStatus === 'CLOSED') && !trimmedRes && !detail.resolutionNotes) {
-      setErr('Resolution notes are required when resolving or closing.')
+    if (
+      (panelStatus === 'RESOLVED' || panelStatus === 'CLOSED') &&
+      !(detail.resolutionNotes && String(detail.resolutionNotes).trim())
+    ) {
+      setErr('Add resolution notes on the full ticket page before resolving or closing.')
       return
     }
     setSaving(true)
@@ -161,7 +201,7 @@ export function AdminTicketsPage() {
       await api.put(`/api/tickets/${detail.id}`, {
         status: panelStatus || null,
         assigneeUserId: panelAssignee ? Number(panelAssignee) : null,
-        resolutionNotes: trimmedRes || null,
+        resolutionNotes: null,
         rejectReason: null,
       })
       await loadList()
@@ -213,15 +253,10 @@ export function AdminTicketsPage() {
 
   const closeTicket = async () => {
     if (!detail) return
-    let notes = (panelResolution.trim() || detail.resolutionNotes || '').trim()
+    const notes = (detail.resolutionNotes || '').trim()
     if (!notes) {
-      const p = window.prompt('Resolution / closure note (required):', '')
-      if (!p?.trim()) {
-        setErr('A note is required to close.')
-        return
-      }
-      notes = p.trim()
-      setPanelResolution(notes)
+      setErr('Use the full ticket page to add resolution notes, then close the ticket from there.')
+      return
     }
     setSaving(true)
     setErr(null)
@@ -326,7 +361,7 @@ export function AdminTicketsPage() {
                   onClick={() => setSelectedId(t.id)}
                 >
                   <div className="admin-tickets-queue-card-top">
-                    <span className="admin-tickets-queue-card-title">{t.title?.trim() || 'Untitled'}</span>
+                    <span className="admin-tickets-queue-card-title">{ticketDisplayHeadline(t)}</span>
                     <span className={`admin-tickets-status-badge admin-tickets-status-badge--${String(t.status || 'OPEN').toLowerCase()}`}>
                       {String(t.status || '').replaceAll('_', ' ')}
                     </span>
@@ -382,7 +417,7 @@ export function AdminTicketsPage() {
                 </div>
               </div>
 
-              <h1 className="admin-tickets-detail-title">{detail.title?.trim() || 'Untitled'}</h1>
+              <h1 className="admin-tickets-detail-title">{ticketDisplayHeadline(detail)}</h1>
               <p className="admin-tickets-detail-id">{formatIncId(detail.id)}</p>
 
               <div className="admin-tickets-detail-times">
@@ -434,17 +469,6 @@ export function AdminTicketsPage() {
               </section>
 
               <section className="admin-tickets-panel-block">
-                <h3 className="admin-tickets-panel-label">Resolution notes</h3>
-                <textarea
-                  className="admin-tickets-textarea"
-                  rows={3}
-                  value={panelResolution}
-                  onChange={(e) => setPanelResolution(e.target.value)}
-                  placeholder="Notes visible to staff and reporter when resolved…"
-                />
-              </section>
-
-              <section className="admin-tickets-panel-block">
                 <h3 className="admin-tickets-panel-label">Description</h3>
                 <div className="admin-tickets-description">{detail.description || '—'}</div>
               </section>
@@ -479,7 +503,9 @@ export function AdminTicketsPage() {
               </section>
 
               <p className="small admin-tickets-full-link">
-                <Link to={`/tickets/${detail.id}`}>Open full ticket page (comments &amp; history) →</Link>
+                <Link to={`/tickets/${detail.id}`}>
+                  Open full ticket page (resolution notes, comments &amp; history) →
+                </Link>
               </p>
 
               {err ? (

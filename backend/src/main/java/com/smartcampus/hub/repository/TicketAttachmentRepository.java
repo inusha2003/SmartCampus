@@ -10,9 +10,11 @@ import java.util.List;
 
 public interface TicketAttachmentRepository extends JpaRepository<TicketAttachment, Long> {
 
-    long countByTicketId(Long ticketId);
+    /** Resolves to {@code ticket.id} (not a {@code ticketId} field on the entity). */
+    long countByTicket_Id(Long ticketId);
 
-    List<TicketAttachment> findByTicketId(Long ticketId);
+    /** Resolves to {@code ticket.id} — required for correct attachment loads per ticket. */
+    List<TicketAttachment> findByTicket_IdOrderByIdAsc(Long ticketId);
 
     @Query("SELECT a FROM TicketAttachment a WHERE a.ticket.id IN :ids ORDER BY a.ticket.id ASC, a.id ASC")
     List<TicketAttachment> findAllByTicketIdIn(@Param("ids") Collection<Long> ids);

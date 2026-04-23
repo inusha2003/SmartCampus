@@ -247,7 +247,7 @@ public class TicketService {
     }
 
     private void removeTicketAttachmentsAndFiles(Long ticketId) {
-        List<TicketAttachment> list = ticketAttachmentRepository.findByTicketId(ticketId);
+        List<TicketAttachment> list = ticketAttachmentRepository.findByTicket_IdOrderByIdAsc(ticketId);
         for (TicketAttachment a : list) {
             try {
                 Files.deleteIfExists(Path.of(a.getStoredPath()));
@@ -337,7 +337,7 @@ public class TicketService {
     @Transactional(readOnly = true)
     public List<TicketComment> listComments(Long ticketId) {
         get(ticketId);
-        return ticketCommentRepository.findByTicketIdOrderByCreatedAtAsc(ticketId);
+        return ticketCommentRepository.findByTicket_IdOrderByCreatedAtAsc(ticketId);
     }
 
     @Transactional
@@ -404,7 +404,7 @@ public class TicketService {
     @Transactional(readOnly = true)
     public List<TicketAttachment> listAttachments(Long ticketId) {
         get(ticketId);
-        return ticketAttachmentRepository.findByTicketId(ticketId);
+        return ticketAttachmentRepository.findByTicket_IdOrderByIdAsc(ticketId);
     }
 
     public void assertCanReadTicket(User user, Ticket t) {
