@@ -4,6 +4,7 @@ import { AuthProvider } from './auth/AuthContext'
 import { Layout } from './components/Layout'
 import { AdminBookingsPage } from './pages/AdminBookingsPage'
 import { AdminResourcesPage } from './pages/AdminResourcesPage'
+import { AdminTicketsPage } from './pages/AdminTicketsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
 import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { BookingsPage } from './pages/BookingsPage'
@@ -35,6 +36,7 @@ function App() {
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="/admin/resources" element={<AdminResourcesPage />} />
+            <Route path="/admin/tickets" element={<AdminTicketsPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
             <Route path="/tickets" element={<TicketsPage />} />
             <Route path="/tickets/:id" element={<TicketDetailPage />} />

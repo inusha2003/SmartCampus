@@ -225,6 +225,17 @@ public class TicketService {
         ticketRepository.delete(t);
     }
 
+    @Transactional
+    public void deleteTicketAsAdmin(User admin, Long ticketId) {
+        if (admin.getRole() != UserRole.ADMIN) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Admin only");
+        }
+        Ticket t = get(ticketId);
+        removeTicketAttachmentsAndFiles(ticketId);
+        ticketCommentRepository.deleteByTicket_Id(ticketId);
+        ticketRepository.delete(t);
+    }
+
     private void assertReporterOwnsAndCanMutate(User user, Ticket t) {
         if (!t.getReporter().getId().equals(user.getId())) {
             throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "You can only change your own tickets");

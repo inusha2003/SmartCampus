@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -163,6 +164,14 @@ public class TicketController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAsReporter(@PathVariable Long id) {
         ticketService.deleteTicketAsReporter(CurrentUser.requireUser(), id);
+    }
+
+    /** Admin deletes any ticket (attachments and comments removed). */
+    @DeleteMapping("/{id}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAsAdmin(@PathVariable Long id) {
+        ticketService.deleteTicketAsAdmin(CurrentUser.requireUser(), id);
     }
 
     @GetMapping("/{id}/comments")

@@ -166,6 +166,100 @@
     color: #ffb3bf;
   }
 
+  /* Tickets page — centered column, grouped form sections */
+  .tickets-page-body {
+    @apply mx-auto w-full max-w-4xl px-3 pb-12 sm:px-4 lg:px-6;
+  }
+
+  .tickets-page-title {
+    @apply mb-4 mt-2 flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tickets-page-stats {
+    @apply mb-6;
+  }
+
+  .ticket-form-card h2 {
+    @apply mb-1 text-xl sm:text-2xl;
+  }
+
+  .ticket-form-lead {
+    @apply mt-2 mb-0 leading-relaxed;
+  }
+
+  .ticket-form {
+    @apply mt-4 flex flex-col gap-0;
+  }
+
+  .ticket-form-error-banner {
+    @apply m-0 rounded-xl border px-4 py-3 text-sm;
+    border-color: rgba(255, 130, 150, 0.4);
+    background: rgba(255, 115, 136, 0.09);
+  }
+
+  .ticket-form-section {
+    @apply mb-5 flex flex-col gap-4 rounded-2xl border px-4 py-5 sm:px-5;
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.42);
+  }
+
+  .ticket-form-section-title {
+    @apply m-0 border-b pb-2.5 text-[11px] font-bold uppercase tracking-[0.14em];
+    color: #9eb5f8;
+    border-color: rgba(149, 179, 255, 0.14);
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-form-grid-2 {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4;
+  }
+
+  .ticket-form-section .field {
+    @apply mb-0;
+  }
+
+  .ticket-form-section .field input,
+  .ticket-form-section .field select,
+  .ticket-form-section .field textarea {
+    @apply max-w-none;
+  }
+
+  .field-hint {
+    @apply mt-1.5 text-xs leading-relaxed;
+    color: rgba(183, 201, 241, 0.9);
+    max-width: 42rem;
+  }
+
+  .ticket-form-field-phone {
+    @apply max-w-xs;
+  }
+
+  .ticket-form-section--photos .ticket-photo-slots {
+    @apply max-w-none sm:max-w-2xl lg:max-w-3xl;
+  }
+
+  .ticket-form-actions {
+    @apply mt-2 flex flex-wrap gap-3 border-t pt-5;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .tickets-queue-heading {
+    @apply mb-4 mt-10 border-b pb-3 text-xl font-semibold tracking-tight sm:text-2xl;
+    color: #e4ecff;
+    font-family: "Sora", "Manrope", sans-serif;
+    border-color: rgba(149, 179, 255, 0.14);
+  }
+
+  .tickets-queue {
+    @apply flex flex-col gap-4;
+  }
+
+  .ticket-queue-card {
+    @apply mb-0;
+  }
+
   .ticket-photo-slots {
     @apply grid max-w-[640px] gap-3;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -303,7 +397,7 @@
   }
 
   .ticket-queue-meta {
-    @apply mb-4 grid gap-2 sm:grid-cols-2;
+    @apply mb-4 grid gap-3 sm:grid-cols-2;
   }
 
   .ticket-queue-meta-row {
@@ -376,6 +470,389 @@
   .ticket-queue-footer {
     @apply mt-2 flex flex-wrap gap-2 border-t pt-3;
     border-color: rgba(159, 181, 248, 0.15);
+  }
+
+  /* Admin ticket desk (/admin/tickets) — queue + detail split */
+  .admin-tickets-desk {
+    @apply mx-auto w-full max-w-[1400px] px-3 pb-10 sm:px-4 lg:px-6;
+  }
+
+  .admin-tickets-toolbar {
+    @apply mb-5 rounded-2xl border px-4 py-4 sm:px-5;
+    border-color: rgba(149, 179, 255, 0.18);
+    background: rgba(5, 10, 22, 0.75);
+  }
+
+  .admin-tickets-toolbar-row {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+  }
+
+  .admin-tickets-search-wrap {
+    @apply relative flex-1;
+  }
+
+  .admin-tickets-search-icon {
+    @apply pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2;
+    color: rgba(158, 184, 255, 0.55);
+  }
+
+  .admin-tickets-search {
+    @apply w-full rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-tickets-search::placeholder {
+    color: rgba(187, 206, 250, 0.45);
+  }
+
+  .admin-tickets-select {
+    @apply rounded-xl px-3 py-2.5 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-tickets-select--status {
+    @apply w-full shrink-0 sm:w-44;
+  }
+
+  .admin-tickets-select--grow {
+    @apply min-w-0 flex-1;
+  }
+
+  .admin-tickets-quick {
+    @apply mt-4 flex flex-wrap items-center gap-2;
+  }
+
+  .admin-tickets-quick-label {
+    @apply mr-1 text-[10px] font-bold uppercase tracking-widest;
+    color: rgba(158, 184, 255, 0.65);
+  }
+
+  .admin-tickets-chip {
+    @apply rounded-full border px-3 py-1.5 text-xs font-semibold transition;
+    border-color: rgba(159, 181, 248, 0.25);
+    background: rgba(8, 14, 28, 0.5);
+    color: #c6d7ff;
+  }
+
+  .admin-tickets-chip:hover {
+    border-color: rgba(120, 165, 255, 0.45);
+    color: #fff;
+  }
+
+  .admin-tickets-chip--active {
+    border-color: rgba(96, 165, 250, 0.85);
+    background: rgba(59, 130, 246, 0.18);
+    color: #dbeafe;
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.35);
+  }
+
+  .admin-tickets-split {
+    @apply grid min-h-[520px] gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6;
+  }
+
+  .admin-tickets-queue {
+    @apply flex max-h-[calc(100vh-220px)] flex-col rounded-2xl border lg:max-h-[calc(100vh-180px)];
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.55);
+  }
+
+  .admin-tickets-queue-head {
+    @apply flex shrink-0 items-start justify-between border-b px-4 py-3;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .admin-tickets-queue-title {
+    @apply m-0 text-xs font-bold uppercase tracking-[0.12em];
+    color: #9eb5f8;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-queue-sub {
+    @apply m-0 mt-0.5 text-xs;
+    color: rgba(183, 201, 241, 0.75);
+  }
+
+  .admin-tickets-queue-count {
+    @apply rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+    border-color: rgba(159, 181, 248, 0.3);
+    color: #b7c9f1;
+  }
+
+  .admin-tickets-queue-list {
+    @apply flex flex-1 flex-col gap-2 overflow-y-auto p-3;
+  }
+
+  .admin-tickets-empty {
+    @apply m-0 px-2 py-6 text-center;
+  }
+
+  .admin-tickets-queue-card {
+    @apply w-full cursor-pointer rounded-xl border p-3 text-left transition;
+    border-color: rgba(159, 181, 248, 0.18);
+    background: rgba(8, 14, 28, 0.65);
+    border-left-width: 4px;
+    border-left-style: solid;
+  }
+
+  .admin-tickets-queue-card:hover {
+    border-color: rgba(159, 181, 248, 0.35);
+    background: rgba(12, 20, 40, 0.85);
+  }
+
+  .admin-tickets-queue-card--active {
+    border-color: rgba(96, 165, 250, 0.55);
+    background: rgba(30, 58, 138, 0.28);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25);
+  }
+
+  .admin-tickets-queue-card--urgent {
+    border-left-color: #f87171;
+  }
+
+  .admin-tickets-queue-card--high {
+    border-left-color: #fb923c;
+  }
+
+  .admin-tickets-queue-card--default {
+    border-left-color: #60a5fa;
+  }
+
+  .admin-tickets-queue-card-top {
+    @apply flex items-start justify-between gap-2;
+  }
+
+  .admin-tickets-queue-card-title {
+    @apply line-clamp-2 text-sm font-semibold leading-snug;
+    color: #f3f8ff;
+  }
+
+  .admin-tickets-queue-inc {
+    @apply m-0 mt-1 font-mono text-[11px] font-medium;
+    color: rgba(158, 184, 255, 0.85);
+  }
+
+  .admin-tickets-queue-meta {
+    @apply m-0 mt-1 text-xs;
+    color: rgba(183, 201, 241, 0.85);
+  }
+
+  .admin-tickets-queue-user {
+    @apply mt-3 flex items-center gap-2.5;
+  }
+
+  .admin-tickets-queue-avatar {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold;
+    background: rgba(96, 165, 250, 0.25);
+    color: #e0f2fe;
+    border: 1px solid rgba(96, 165, 250, 0.4);
+  }
+
+  .admin-tickets-queue-name {
+    @apply m-0 text-xs font-semibold;
+    color: #e9f0ff;
+  }
+
+  .admin-tickets-queue-email {
+    @apply m-0 max-w-[220px] truncate text-[11px];
+    color: rgba(183, 201, 241, 0.8);
+  }
+
+  .admin-tickets-queue-foot {
+    @apply mt-2 flex flex-wrap gap-2 border-t pt-2 text-[10px] font-semibold uppercase tracking-wide;
+    border-color: rgba(149, 179, 255, 0.1);
+    color: rgba(158, 184, 255, 0.75);
+  }
+
+  .admin-tickets-status-badge {
+    @apply shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+  }
+
+  .admin-tickets-status-badge--open {
+    background: rgba(52, 211, 153, 0.2);
+    color: #a7f3d0;
+    border: 1px solid rgba(52, 211, 153, 0.45);
+  }
+
+  .admin-tickets-status-badge--in_progress {
+    background: rgba(96, 165, 250, 0.22);
+    color: #bfdbfe;
+    border: 1px solid rgba(96, 165, 250, 0.45);
+  }
+
+  .admin-tickets-status-badge--resolved,
+  .admin-tickets-status-badge--closed {
+    background: rgba(148, 163, 184, 0.2);
+    color: #e2e8f0;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .admin-tickets-status-badge--rejected {
+    background: rgba(248, 113, 113, 0.18);
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.45);
+  }
+
+  .admin-tickets-detail {
+    @apply flex max-h-[calc(100vh-220px)] flex-col overflow-y-auto rounded-2xl border p-4 sm:p-5 lg:max-h-[calc(100vh-180px)];
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.65);
+  }
+
+  .admin-tickets-detail-empty {
+    @apply flex flex-1 flex-col items-center justify-center gap-3 py-16 text-center;
+  }
+
+  .admin-tickets-detail-empty-icon {
+    @apply h-14 w-14 opacity-40;
+    color: #9eb5f8;
+  }
+
+  .admin-tickets-detail-head {
+    @apply flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .admin-tickets-detail-badges {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .admin-tickets-pill {
+    @apply rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+  }
+
+  .admin-tickets-pill--muted {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .admin-tickets-detail-actions {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .admin-tickets-btn-compact {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .admin-tickets-detail-title {
+    @apply mb-1 mt-4 text-2xl font-bold leading-tight tracking-tight;
+    color: #f8fafc;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-detail-id {
+    @apply m-0 font-mono text-sm;
+    color: rgba(158, 184, 255, 0.9);
+  }
+
+  .admin-tickets-detail-times {
+    @apply mt-5 grid gap-3 sm:grid-cols-2;
+  }
+
+  .admin-tickets-time-box {
+    @apply rounded-xl border px-3 py-2.5;
+    border-color: rgba(159, 181, 248, 0.2);
+    background: rgba(6, 12, 26, 0.8);
+  }
+
+  .admin-tickets-time-label {
+    @apply mb-1 block text-[10px] font-bold uppercase tracking-widest;
+    color: #9eb5f8;
+  }
+
+  .admin-tickets-time-value {
+    @apply text-sm font-medium;
+    color: #e9f0ff;
+  }
+
+  .admin-tickets-panel-block {
+    @apply mt-5 border-t pt-5;
+    border-color: rgba(149, 179, 255, 0.1);
+  }
+
+  .admin-tickets-panel-label {
+    @apply m-0 mb-2 text-[10px] font-bold uppercase tracking-[0.14em];
+    color: #9eb5f8;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-assign-row {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-stretch;
+  }
+
+  .admin-tickets-assign-btn {
+    @apply shrink-0 sm:px-5;
+  }
+
+  .admin-tickets-reject {
+    @apply w-full sm:w-auto;
+  }
+
+  .admin-tickets-textarea {
+    @apply min-h-[88px] w-full resize-y rounded-xl px-3 py-2 text-sm outline-none focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 250, 0.35);
+  }
+
+  .admin-tickets-description {
+    @apply whitespace-pre-wrap rounded-xl border px-3 py-3 text-sm leading-relaxed;
+    border-color: rgba(159, 181, 248, 0.2);
+    background: rgba(5, 10, 20, 0.55);
+    color: #b7c9f1;
+  }
+
+  .admin-tickets-photos-head {
+    @apply mb-2 flex items-center justify-between gap-2;
+  }
+
+  .admin-tickets-file-count {
+    @apply text-xs font-medium;
+    color: rgba(183, 201, 241, 0.75);
+  }
+
+  .admin-tickets-photos-empty {
+    @apply m-0 rounded-xl border border-dashed px-4 py-8 text-center;
+    border-color: rgba(159, 181, 248, 0.22);
+    color: rgba(183, 201, 241, 0.65);
+  }
+
+  .admin-tickets-photo-grid {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .admin-tickets-photo-link {
+    @apply block overflow-hidden rounded-xl transition;
+    border: 1px solid rgba(159, 181, 248, 0.3);
+    max-width: 160px;
+  }
+
+  .admin-tickets-photo-link:hover {
+    border-color: rgba(199, 255, 47, 0.5);
+  }
+
+  .admin-tickets-photo-thumb {
+    @apply m-0 block h-32 w-full max-w-[160px] object-cover;
+  }
+
+  .admin-tickets-full-link {
+    @apply mt-6 border-t pt-4;
+    border-color: rgba(149, 179, 255, 0.1);
+  }
+
+  .admin-tickets-full-link a {
+    color: var(--sc-orange-500);
+  }
+
+  .admin-tickets-err {
+    @apply mt-4;
   }
 
   .ticket-detail-attachments-visual {

@@ -252,7 +252,6 @@ export function TicketsPage() {
   )
   const [photoEditorSlot, setPhotoEditorSlot] = useState(null)
   const [editingTicketId, setEditingTicketId] = useState(null)
-  const [replaceAttachments, setReplaceAttachments] = useState(false)
   const [err, setErr] = useState(null)
 
   const photoPreviewUrls = useMemo(
@@ -300,7 +299,6 @@ export function TicketsPage() {
 
   const resetFormToNew = () => {
     setEditingTicketId(null)
-    setReplaceAttachments(false)
     setDescription('')
     setTitle('')
     setContactName('')
@@ -327,7 +325,6 @@ export function TicketsPage() {
     setContactEmail(t.contactEmail || '')
     setContactPhone(String(t.contactPhone || '').replace(/\D/g, '').slice(0, MAX_CONTACT_PHONE_DIGITS))
     setPhotoSlots(Array.from({ length: MAX_TICKET_PHOTOS }, () => null))
-    setReplaceAttachments(false)
     setEditingTicketId(t.id)
     setFieldErrors({})
     setErr(null)
@@ -392,10 +389,6 @@ export function TicketsPage() {
       setErr('Maximum 3 images are allowed.')
       return
     }
-    if (editingTicketId != null && replaceAttachments && attachedPhotos.length > MAX_TICKET_PHOTOS) {
-      setErr('Maximum 3 images are allowed.')
-      return
-    }
 
     const fd = new FormData()
     fd.append('locationText', trimmedLocation)
@@ -408,6 +401,8 @@ export function TicketsPage() {
     fd.append('contactPhone', trimmedPhone)
 
     const isEdit = editingTicketId != null
+    /** When editing, only replace server images if the user picked at least one new file. */
+    const replaceAttachments = isEdit && attachedPhotos.length > 0
     if (isEdit) {
       fd.append('replaceAttachments', replaceAttachments ? 'true' : 'false')
       if (replaceAttachments) {
@@ -456,18 +451,17 @@ export function TicketsPage() {
 
   return (
     <RequireUser>
-    <div>
+    <div className="tickets-page">
       <section className="hero-card rainbow mb-6">
         <div className="hero-grid">
           <div className="relative z-10">
             <p className="glass-chip">Incident Command Center</p>
             <h1 className="mt-3 flex items-center gap-2">
-              <HiOutlineWrenchScrewdriver className="text-cyan-300" />
+              <HiOutlineWrenchScrewdriver className="text-cyan-300" aria-hidden />
               <span className="gradient-title">Report. Track. Resolve.</span>
             </h1>
             <p className="small max-w-2xl">
-              Create tickets with photo evidence, collaborate with technicians, and keep every
-              issue visible from open to closure.
+              Create tickets with photo evidence, collaborate with technicians, and keep every issue visible from open to closure.
             </p>
           </div>
           <img
@@ -478,231 +472,233 @@ export function TicketsPage() {
         </div>
       </section>
 
-      <h1 className="flex items-center gap-2">
-        <HiOutlineWrenchScrewdriver className="text-cyan-300" />
-        Maintenance &amp; incidents
-      </h1>
-      <div className="card-grid">
-        <div className="card">
-          <p className="small flex items-center gap-2"><HiOutlineTicket className="text-violet-300" /> Total tickets</p>
-          <p className="text-3xl font-bold metric-value">{tickets.length}</p>
+      <div className="tickets-page-body">
+        <h1 className="tickets-page-title">
+          <HiOutlineWrenchScrewdriver className="text-cyan-300 h-8 w-8 shrink-0" aria-hidden />
+          <span>Maintenance & incidents</span>
+        </h1>
+        <div className="card-grid tickets-page-stats">
+          <div className="card">
+            <p className="small flex items-center gap-2"><HiOutlineTicket className="text-violet-300" /> Total tickets</p>
+            <p className="text-3xl font-bold metric-value">{tickets.length}</p>
+          </div>
+          <div className="card">
+            <p className="small flex items-center gap-2"><HiOutlineExclamationTriangle className="text-amber-300" /> Open/In progress</p>
+            <p className="text-3xl font-bold metric-value">{tickets.filter((x) => x.status === 'OPEN' || x.status === 'IN_PROGRESS').length}</p>
+          </div>
+          <div className="card">
+            <p className="small flex items-center gap-2"><HiOutlinePhoto className="text-emerald-300" /> Evidence ready</p>
+            <p className="text-3xl font-bold metric-value">Up to 3 images</p>
+          </div>
         </div>
-        <div className="card">
-          <p className="small flex items-center gap-2"><HiOutlineExclamationTriangle className="text-amber-300" /> Open/In progress</p>
-          <p className="text-3xl font-bold metric-value">{tickets.filter((x) => x.status === 'OPEN' || x.status === 'IN_PROGRESS').length}</p>
-        </div>
-        <div className="card">
-          <p className="small flex items-center gap-2"><HiOutlinePhoto className="text-emerald-300" /> Evidence ready</p>
-          <p className="text-3xl font-bold metric-value">Up to 3 images</p>
-        </div>
-      </div>
-      <div className="card">
-        <h2>{editingTicketId != null ? `Edit ticket #${editingTicketId}` : 'Report an issue'}</h2>
-        {editingTicketId != null ? (
-          <p className="small mb-3 max-w-[640px]">
-            Update your details below. Photos stay the same unless you turn on <strong>Replace photos</strong>.
-          </p>
-        ) : null}
-        <form onSubmit={(e) => void submit(e)} noValidate>
-          <div className={`field${fieldErrors.relatedIncident ? ' field-invalid' : ''}`}>
-            <label>Related incident</label>
-            <select
-              value={relatedIncident}
-              onChange={(e) => {
-                setRelatedIncident(e.target.value)
-                clearFieldError('relatedIncident')
-              }}
-            >
-              <option value="">Select incident</option>
-              {RELATED_INCIDENT_TYPES.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.relatedIncident ? <p className="field-error">{fieldErrors.relatedIncident}</p> : null}
-          </div>
-          <div className={`field${fieldErrors.title ? ' field-invalid' : ''}`}>
-            <label>Title</label>
-            <input
-              value={title}
-              maxLength={MAX_TITLE}
-              onChange={(e) => {
-                const v = e.target.value
-                setTitle(v)
-                clearFieldError('title')
-                const guess = inferIncidentFromTitle(v)
-                if (guess) setRelatedIncident(guess)
-              }}
-              placeholder="e.g. WiFi not working in library, broken AC in hall…"
-              aria-describedby="ticket-title-hint"
-            />
-            {fieldErrors.title ? <p className="field-error">{fieldErrors.title}</p> : null}
-            <p id="ticket-title-hint" className="small mt-1 max-w-[440px]">
-              Required. Keywords here can auto-select <strong>Related incident</strong> above (you can still change
-              the category manually).
-            </p>
-          </div>
-          <div className={`field${fieldErrors.location || fieldErrors.locationOther ? ' field-invalid' : ''}`}>
-            <label>Location / area</label>
-            <select
-              value={locationSelect}
-              onChange={(e) => {
-                const v = e.target.value
-                setLocationSelect(v)
-                if (v !== LOCATION_OTHER) setLocationOther('')
-                clearFieldError('location')
-                clearFieldError('locationOther')
-              }}
-            >
-              <option value="">Select a location</option>
-              {SLIIT_LOCATIONS.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
-                </option>
-              ))}
-              <option value={LOCATION_OTHER}>Other (describe below)</option>
-            </select>
-            {fieldErrors.location ? <p className="field-error">{fieldErrors.location}</p> : null}
-            {locationSelect === LOCATION_OTHER && (
-              <input
-                className="mt-2"
-                value={locationOther}
-                onChange={(e) => {
-                  setLocationOther(e.target.value)
-                  clearFieldError('locationOther')
-                  clearFieldError('location')
-                }}
-                placeholder="e.g. room number or area not listed"
-                aria-label="Custom location description"
-              />
-            )}
-            {fieldErrors.locationOther ? <p className="field-error">{fieldErrors.locationOther}</p> : null}
-          </div>
-          <div className={`field${fieldErrors.description ? ' field-invalid' : ''}`}>
-            <label>Description</label>
-            <textarea
-              value={description}
-              maxLength={MAX_DESCRIPTION}
-              onChange={(e) => {
-                const v = stripWhitespaceForTicketDescription(e.target.value, MAX_DESCRIPTION)
-                setDescription(v)
-                clearFieldError('description')
-              }}
-              rows={4}
-              spellCheck="true"
-              aria-describedby="ticket-description-hint"
-            />
-            {fieldErrors.description ? <p className="field-error">{fieldErrors.description}</p> : null}
-            <p id="ticket-description-hint" className="small mt-1 max-w-[440px]">
-              No spaces. Maximum {MAX_DESCRIPTION} characters ({description.length}/{MAX_DESCRIPTION}).
-            </p>
-          </div>
-          <div className="field">
-            <label>Priority</label>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-              <option value="LOW">LOW</option>
-              <option value="MEDIUM">MEDIUM</option>
-              <option value="HIGH">HIGH</option>
-              <option value="URGENT">URGENT</option>
-            </select>
-          </div>
-          <div className={`field${fieldErrors.contactName ? ' field-invalid' : ''}`}>
-            <label>Contact name</label>
-            <input
-              value={contactName}
-              maxLength={MAX_CONTACT_NAME}
-              autoComplete="name"
-              onChange={(e) => {
-                const v = e.target.value.replace(/[^\p{L}\s'.-]/gu, '')
-                setContactName(v)
-                clearFieldError('contactName')
-              }}
-              placeholder="e.g. Kamal Perera"
-              aria-describedby="ticket-contact-name-hint"
-            />
-            {fieldErrors.contactName ? <p className="field-error">{fieldErrors.contactName}</p> : null}
-            <p id="ticket-contact-name-hint" className="small mt-1 max-w-[440px]">
-              {"Letters only (any language). Spaces and . ' - are allowed. No numbers."}
-            </p>
-          </div>
-          <div className={`field${fieldErrors.contactEmail ? ' field-invalid' : ''}`}>
-            <label>Contact email</label>
-            <input
-              type="text"
-              inputMode="email"
-              autoComplete="email"
-              value={contactEmail}
-              maxLength={MAX_CONTACT_EMAIL}
-              onChange={(e) => {
-                const v = e.target.value.replace(/[^\p{L}\p{N}@.]/gu, '')
-                setContactEmail(v)
-                clearFieldError('contactEmail')
-              }}
-              placeholder="e.g. name@gmail.com"
-              aria-describedby="ticket-contact-email-hint"
-            />
-            {fieldErrors.contactEmail ? <p className="field-error">{fieldErrors.contactEmail}</p> : null}
-            <p id="ticket-contact-email-hint" className="small mt-1 max-w-[440px]">
-              Only letters, numbers, @ and . (no spaces or other symbols).
-            </p>
-          </div>
-          <div className={`field${fieldErrors.contactPhone ? ' field-invalid' : ''}`}>
-            <label>Contact phone</label>
-            <input
-              inputMode="numeric"
-              autoComplete="tel"
-              maxLength={MAX_CONTACT_PHONE_DIGITS}
-              value={contactPhone}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, '').slice(0, MAX_CONTACT_PHONE_DIGITS)
-                setContactPhone(digits)
-                clearFieldError('contactPhone')
-              }}
-              placeholder="e.g. 0771234567"
-            />
-            {fieldErrors.contactPhone ? <p className="field-error">{fieldErrors.contactPhone}</p> : null}
-            <p className="small mt-1 max-w-[440px]">Exactly 10 digits (no spaces or +), e.g. 0771234567.</p>
-          </div>
+
+        <div className="card ticket-form-card">
+          <h2>{editingTicketId != null ? `Edit ticket #${editingTicketId}` : 'Report an issue'}</h2>
           {editingTicketId != null ? (
-            <div className="field">
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={replaceAttachments}
-                  onChange={(e) => {
-                    setReplaceAttachments(e.target.checked)
-                    if (!e.target.checked) {
-                      setPhotoSlots(Array.from({ length: MAX_TICKET_PHOTOS }, () => null))
-                    }
-                  }}
-                />
-                <span>
-                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#c6d7ff]">
-                    Replace photos
-                  </span>
-                  <span className="small block text-[#b7c9f1]">
-                    Removes current ticket images. Then add up to 3 new photos in the slots below, or leave
-                    all empty for no images.
-                  </span>
-                </span>
-              </label>
-            </div>
-          ) : null}
-          <div className={`field${editingTicketId != null && !replaceAttachments ? ' opacity-60' : ''}`}>
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#c6d7ff]">
-              Images (max 3)
-            </span>
-            <p className="small mb-3 max-w-[640px]">
-              {editingTicketId != null && !replaceAttachments
-                ? 'Existing photos are kept. Turn on Replace photos above to change them.'
-                : 'Optional — use each slot for one photo. You can submit with any number of slots filled (0–3).'}
+            <p className="small ticket-form-lead max-w-2xl">
+              Update your details below. Leave image slots empty to keep current photos, or add new ones to replace
+              them.
             </p>
-            <div
-              className={`ticket-photo-slots${editingTicketId != null && !replaceAttachments ? ' pointer-events-none select-none' : ''}`}
-              aria-live="polite"
-            >
+          ) : (
+            <p className="small ticket-form-lead max-w-2xl">
+              Describe the issue, where it is, and how we can reach you. Photos help staff respond faster.
+            </p>
+          )}
+          <form className="ticket-form" onSubmit={(e) => void submit(e)} noValidate>
+            <section className="ticket-form-section" aria-labelledby="ticket-section-incident">
+              <h3 id="ticket-section-incident" className="ticket-form-section-title">
+                Incident details
+              </h3>
+              <div className="ticket-form-grid-2">
+                <div className={`field${fieldErrors.relatedIncident ? ' field-invalid' : ''}`}>
+                  <label htmlFor="ticket-related-incident">Related incident</label>
+                  <select
+                    id="ticket-related-incident"
+                    value={relatedIncident}
+                    onChange={(e) => {
+                      setRelatedIncident(e.target.value)
+                      clearFieldError('relatedIncident')
+                    }}
+                  >
+                    <option value="">Select incident</option>
+                    {RELATED_INCIDENT_TYPES.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.relatedIncident ? <p className="field-error">{fieldErrors.relatedIncident}</p> : null}
+                </div>
+                <div className="field">
+                  <label htmlFor="ticket-priority">Priority</label>
+                  <select id="ticket-priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
+                    <option value="LOW">LOW</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="URGENT">URGENT</option>
+                  </select>
+                </div>
+              </div>
+              <div className={`field${fieldErrors.title ? ' field-invalid' : ''}`}>
+                <label htmlFor="ticket-title">Title</label>
+                <input
+                  id="ticket-title"
+                  value={title}
+                  maxLength={MAX_TITLE}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setTitle(v)
+                    clearFieldError('title')
+                    const guess = inferIncidentFromTitle(v)
+                    if (guess) setRelatedIncident(guess)
+                  }}
+                  placeholder="e.g. WiFi not working in library, broken AC in hall…"
+                  aria-describedby="ticket-title-hint"
+                />
+                {fieldErrors.title ? <p className="field-error">{fieldErrors.title}</p> : null}
+                <p id="ticket-title-hint" className="field-hint">
+                  Required. Keywords can auto-select <strong className="text-[#dce7ff]">Related incident</strong> (you
+                  can still change it manually).
+                </p>
+              </div>
+              <div className={`field${fieldErrors.location || fieldErrors.locationOther ? ' field-invalid' : ''}`}>
+                <label htmlFor="ticket-location">Location / area</label>
+                <select
+                  id="ticket-location"
+                  value={locationSelect}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setLocationSelect(v)
+                    if (v !== LOCATION_OTHER) setLocationOther('')
+                    clearFieldError('location')
+                    clearFieldError('locationOther')
+                  }}
+                >
+                  <option value="">Select a location</option>
+                  {SLIIT_LOCATIONS.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                  <option value={LOCATION_OTHER}>Other (describe below)</option>
+                </select>
+                {fieldErrors.location ? <p className="field-error">{fieldErrors.location}</p> : null}
+                {locationSelect === LOCATION_OTHER && (
+                  <input
+                    id="ticket-location-other"
+                    className="mt-3"
+                    value={locationOther}
+                    onChange={(e) => {
+                      setLocationOther(e.target.value)
+                      clearFieldError('locationOther')
+                      clearFieldError('location')
+                    }}
+                    placeholder="e.g. room number or area not listed"
+                    aria-label="Custom location description"
+                  />
+                )}
+                {fieldErrors.locationOther ? <p className="field-error">{fieldErrors.locationOther}</p> : null}
+              </div>
+              <div className={`field${fieldErrors.description ? ' field-invalid' : ''}`}>
+                <label htmlFor="ticket-description">Description</label>
+                <textarea
+                  id="ticket-description"
+                  value={description}
+                  maxLength={MAX_DESCRIPTION}
+                  onChange={(e) => {
+                    const v = stripWhitespaceForTicketDescription(e.target.value, MAX_DESCRIPTION)
+                    setDescription(v)
+                    clearFieldError('description')
+                  }}
+                  rows={4}
+                  spellCheck="true"
+                  aria-describedby="ticket-description-hint"
+                />
+                {fieldErrors.description ? <p className="field-error">{fieldErrors.description}</p> : null}
+                <p id="ticket-description-hint" className="field-hint">
+                  No spaces. Maximum {MAX_DESCRIPTION} characters ({description.length}/{MAX_DESCRIPTION}).
+                </p>
+              </div>
+            </section>
+
+            <section className="ticket-form-section" aria-labelledby="ticket-section-contact">
+              <h3 id="ticket-section-contact" className="ticket-form-section-title">
+                Contact
+              </h3>
+              <div className="ticket-form-grid-2">
+                <div className={`field${fieldErrors.contactName ? ' field-invalid' : ''}`}>
+                  <label htmlFor="ticket-contact-name">Contact name</label>
+                  <input
+                    id="ticket-contact-name"
+                    value={contactName}
+                    maxLength={MAX_CONTACT_NAME}
+                    autoComplete="name"
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^\p{L}\s'.-]/gu, '')
+                      setContactName(v)
+                      clearFieldError('contactName')
+                    }}
+                    placeholder="e.g. Kamal Perera"
+                    aria-describedby="ticket-contact-name-hint"
+                  />
+                  {fieldErrors.contactName ? <p className="field-error">{fieldErrors.contactName}</p> : null}
+                  <p id="ticket-contact-name-hint" className="field-hint">
+                    {"Letters only (any language). Spaces and . ' - allowed. No numbers."}
+                  </p>
+                </div>
+                <div className={`field${fieldErrors.contactEmail ? ' field-invalid' : ''}`}>
+                  <label htmlFor="ticket-contact-email">Contact email</label>
+                  <input
+                    id="ticket-contact-email"
+                    type="text"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={contactEmail}
+                    maxLength={MAX_CONTACT_EMAIL}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^\p{L}\p{N}@.]/gu, '')
+                      setContactEmail(v)
+                      clearFieldError('contactEmail')
+                    }}
+                    placeholder="e.g. name@gmail.com"
+                    aria-describedby="ticket-contact-email-hint"
+                  />
+                  {fieldErrors.contactEmail ? <p className="field-error">{fieldErrors.contactEmail}</p> : null}
+                  <p id="ticket-contact-email-hint" className="field-hint">
+                    Only letters, numbers, @ and . (no spaces or other symbols).
+                  </p>
+                </div>
+              </div>
+              <div className={`field ticket-form-field-phone${fieldErrors.contactPhone ? ' field-invalid' : ''}`}>
+                <label htmlFor="ticket-contact-phone">Contact phone</label>
+                <input
+                  id="ticket-contact-phone"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  maxLength={MAX_CONTACT_PHONE_DIGITS}
+                  value={contactPhone}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, '').slice(0, MAX_CONTACT_PHONE_DIGITS)
+                    setContactPhone(digits)
+                    clearFieldError('contactPhone')
+                  }}
+                  placeholder="e.g. 0771234567"
+                />
+                {fieldErrors.contactPhone ? <p className="field-error">{fieldErrors.contactPhone}</p> : null}
+                <p className="field-hint">Exactly 10 digits (no spaces or +), e.g. 0771234567.</p>
+              </div>
+            </section>
+
+            <section className="ticket-form-section ticket-form-section--photos" aria-labelledby="ticket-section-photos">
+              <h3 id="ticket-section-photos" className="ticket-form-section-title">
+                Photos (optional, max 3)
+              </h3>
+              <p className="field-hint m-0 max-w-2xl">
+                {editingTicketId != null
+                  ? 'Leave slots empty to keep current ticket photos. Add images only if you want to replace them (up to 3).'
+                  : 'Use each slot for one image if you have evidence. You can submit with zero photos.'}
+              </p>
+              <div className="ticket-photo-slots" aria-live="polite">
               {photoSlots.map((file, i) => {
                 const previewUrl = photoPreviewUrls[i]
                 const inputId = `ticket-photo-slot-${i}`
@@ -755,9 +751,13 @@ export function TicketsPage() {
                 )
               })}
             </div>
-          </div>
-          {err && <p className="error">{err}</p>}
-          <div className="row-actions">
+            </section>
+          {err ? (
+            <p className="error ticket-form-error-banner" role="alert">
+              {err}
+            </p>
+          ) : null}
+          <div className="ticket-form-actions">
             <button type="submit" className="btn primary">
               {editingTicketId != null ? 'Update ticket' : 'Submit ticket'}
             </button>
@@ -768,8 +768,10 @@ export function TicketsPage() {
             ) : null}
           </div>
         </form>
-      </div>
-      <h2>Your tickets &amp; queue</h2>
+        </div>
+
+        <h2 className="tickets-queue-heading">Your tickets &amp; queue</h2>
+        <div className="tickets-queue">
       {tickets.map((t) => {
         const attachments = Array.isArray(t.attachments) ? t.attachments : []
         const imageAtts = attachments.filter(isImageAttachment)
@@ -901,6 +903,9 @@ export function TicketsPage() {
           </div>
         )
       })}
+        </div>
+      </div>
+
       <TicketPhotoEditor
         open={photoEditorSlot !== null}
         file={photoEditorSlot !== null ? photoSlots[photoEditorSlot] : null}
