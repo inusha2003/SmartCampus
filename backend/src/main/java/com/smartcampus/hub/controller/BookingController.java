@@ -4,6 +4,7 @@ import com.smartcampus.hub.domain.BookingStatus;
 import com.smartcampus.hub.dto.BookingDecisionRequest;
 import com.smartcampus.hub.dto.BookingDto;
 import com.smartcampus.hub.dto.CreateBookingRequest;
+import com.smartcampus.hub.dto.UpdateBookingRequest;
 import com.smartcampus.hub.security.CurrentUser;
 import com.smartcampus.hub.service.BookingService;
 import jakarta.validation.Valid;
@@ -26,6 +27,18 @@ public class BookingController {
     public BookingDto create(@Valid @RequestBody CreateBookingRequest req) {
         return BookingDto.from(bookingService.create(
                 CurrentUser.requireUser(),
+                req.resourceId(),
+                req.startAt(),
+                req.endAt(),
+                req.purpose(),
+                req.expectedAttendees()));
+    }
+
+    @PutMapping("/{id}")
+    public BookingDto update(@PathVariable Long id, @Valid @RequestBody UpdateBookingRequest req) {
+        return BookingDto.from(bookingService.update(
+                CurrentUser.requireUser(),
+                id,
                 req.resourceId(),
                 req.startAt(),
                 req.endAt(),

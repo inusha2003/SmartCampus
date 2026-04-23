@@ -24,7 +24,23 @@ export function BookingsPage() {
   const [end, setEnd] = useState('')
   const [purpose, setPurpose] = useState('')
   const [attendees, setAttendees] = useState('')
+  const [editingBookingId, setEditingBookingId] = useState(null)
   const [err, setErr] = useState(null)
+
+  const toDateTimeLocalValue = (isoString) => {
+    const date = new Date(isoString)
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000
+    return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16)
+  }
+
+  const resetForm = () => {
+    setResourceId('')
+    setStart('')
+    setEnd('')
+    setPurpose('')
+    setAttendees('')
+    setEditingBookingId(null)
+  }
 
   const load = async () => {
     const [{ data: b }, { data: r }] = await Promise.all([
@@ -89,20 +105,39 @@ export function BookingsPage() {
       return
     }
     try {
-      await api.post('/api/bookings', {
-        resourceId: Number(resourceId),
-        startAt: startDate.toISOString(),
-        endAt: endDate.toISOString(),
-        purpose: purposeTrimmed || null,
-        expectedAttendees: attendeesNum,
-      })
-      setPurpose('')
-      setAttendees('')
+      if (editingBookingId) {
+        await api.put(`/api/bookings/${editingBookingId}`, {
+          resourceId: Number(resourceId),
+          startAt: startDate.toISOString(),
+          endAt: endDate.toISOString(),
+          purpose: purposeTrimmed || null,
+          expectedAttendees: attendeesNum,
+        })
+      } else {
+        await api.post('/api/bookings', {
+          resourceId: Number(resourceId),
+          startAt: startDate.toISOString(),
+          endAt: endDate.toISOString(),
+          purpose: purposeTrimmed || null,
+          expectedAttendees: attendeesNum,
+        })
+      }
+      resetForm()
       await load()
     } catch (ex) {
       const msg = ex?.response?.data?.error
       setErr(msg || 'Request failed (overlap or invalid slot?)')
     }
+  }
+
+  const edit = (booking) => {
+    setErr(null)
+    setEditingBookingId(booking.id)
+    setResourceId(String(booking.resourceId))
+    setStart(toDateTimeLocalValue(booking.startAt))
+    setEnd(toDateTimeLocalValue(booking.endAt))
+    setPurpose(booking.purpose || '')
+    setAttendees(booking.expectedAttendees != null ? String(booking.expectedAttendees) : '')
   }
 
   const cancel = async (id) => {
@@ -158,7 +193,7 @@ export function BookingsPage() {
         </div>
       </div>
       <div className="card">
-        <h2>New request</h2>
+        <h2>{editingBookingId ? 'Edit request' : 'New request'}</h2>
         <form onSubmit={(e) => void submit(e)}>
           <div className="field">
             <label>Resource</label>
@@ -208,8 +243,13 @@ export function BookingsPage() {
           </div>
           {err && <p className="error">{err}</p>}
           <button type="submit" className="btn primary">
-            Submit request
+            {editingBookingId ? 'Update request' : 'Submit request'}
           </button>
+          {editingBookingId && (
+            <button type="button" className="btn ghost ml-2" onClick={resetForm}>
+              Cancel edit
+            </button>
+          )}
         </form>
       </div>
       <h2>Your requests</h2>
@@ -222,6 +262,13 @@ export function BookingsPage() {
           </p>
           {b.purpose && <p className="small">{b.purpose}</p>}
           {b.decisionReason && <p className="small">Note: {b.decisionReason}</p>}
+          {b.status === 'PENDING' && (
+            <div className="row-actions">
+              <button type="button" className="btn ghost" onClick={() => edit(b)}>
+                Edit
+              </button>
+            </div>
+          )}
           {b.status === 'APPROVED' && (
             <div className="row-actions">
               <button type="button" className="btn danger" onClick={() => void cancel(b.id)}>
