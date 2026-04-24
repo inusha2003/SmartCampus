@@ -1024,6 +1024,17 @@
     background: rgba(10, 19, 37, 0.86);
   }
 
+  /* Login split: nudge “Go to sign up” card slightly lower than the main card */
+  .auth-shell.split .auth-card.secondary {
+    margin-top: 1.25rem;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.split .auth-card.secondary {
+      margin-top: 2.5rem;
+    }
+  }
+
   .auth-header {
     @apply mb-5;
   }
