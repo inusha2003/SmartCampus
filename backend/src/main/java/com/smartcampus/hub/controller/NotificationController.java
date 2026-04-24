@@ -40,4 +40,10 @@ public class NotificationController {
     public void markAllRead() {
         notificationService.markAllRead(CurrentUser.requireUser().getId());
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAll() {
+        notificationService.deleteAllForUser(CurrentUser.requireUser().getId());
+    }
 }

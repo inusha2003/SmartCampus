@@ -58,4 +58,9 @@ public class NotificationService {
         list.forEach(n -> n.setReadFlag(true));
         notificationRepository.saveAll(list);
     }
+
+    @Transactional
+    public void deleteAllForUser(Long userId) {
+        notificationRepository.deleteByUser_Id(userId);
+    }
 }
