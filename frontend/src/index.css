@@ -1014,6 +1014,34 @@
     }
   }
 
+  /* Login (dev): main login + dev login side by side; sign-up card full width below */
+  .auth-shell.login-dev-layout {
+    max-width: 1080px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .auth-login-dev-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .auth-login-dev-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .auth-shell.login-dev-layout .auth-card.secondary {
+    margin-top: 0;
+    max-width: 640px;
+    width: 100%;
+    justify-self: center;
+  }
+
   .auth-card {
     @apply rounded-2xl p-6 shadow-lg;
     background: rgba(9, 17, 34, 0.94);
@@ -1024,13 +1052,13 @@
     background: rgba(10, 19, 37, 0.86);
   }
 
-  /* Login split: nudge “Go to sign up” card slightly lower than the main card */
-  .auth-shell.split .auth-card.secondary {
+  /* Login split (prod: login | signup): nudge sign-up card slightly lower */
+  .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
     margin-top: 1.25rem;
   }
 
   @media (min-width: 900px) {
-    .auth-shell.split .auth-card.secondary {
+    .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
       margin-top: 2.5rem;
     }
   }

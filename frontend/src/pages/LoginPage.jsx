@@ -122,88 +122,133 @@ export function LoginPage() {
 
   const showDev = import.meta.env.DEV
 
-  return (
-    <div className="auth-shell split">
-      <section className="auth-card">
-        <div className="auth-header">
-          <p className="auth-brand">Smart Campus Hub</p>
-          <h1 className="auth-title">Log in to your account</h1>
-          <p className="small">Welcome back! Select your preferred sign-in method.</p>
+  const loginCard = (
+    <section className="auth-card">
+      <div className="auth-header">
+        <p className="auth-brand">Smart Campus Hub</p>
+        <h1 className="auth-title">Log in to your account</h1>
+        <p className="small">Welcome back! Select your preferred sign-in method.</p>
+      </div>
+
+      <div className="auth-social-grid">
+        <button type="button" className="auth-social-btn" onClick={google} disabled={!googleConfigured}>
+          <FaGoogle />
+          <span>Google</span>
+        </button>
+      </div>
+
+      <div className="auth-divider">
+        <span>or continue with email</span>
+      </div>
+
+      <form onSubmit={(e) => void credentialLogin(e)}>
+        <div className="auth-input">
+          <HiOutlineEnvelope />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            aria-label="Email"
+          />
+        </div>
+        <div className="auth-input">
+          <HiOutlineEyeSlash />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            aria-label="Password"
+          />
         </div>
 
-        <div className="auth-social-grid">
-          <button type="button" className="auth-social-btn" onClick={google} disabled={!googleConfigured}>
-            <FaGoogle />
-            <span>Google</span>
+        <div className="auth-meta-row">
+          <label className="auth-checkbox">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <span>Remember me</span>
+          </label>
+          <button type="button" className="auth-link-btn">
+            Forgot Password?
           </button>
         </div>
 
-        <div className="auth-divider">
-          <span>or continue with email</span>
-        </div>
+        <button type="submit" className="btn primary auth-submit" disabled={loggingIn}>
+          {loggingIn ? 'Logging in…' : 'Log in'}
+        </button>
+      </form>
 
-        <form onSubmit={(e) => void credentialLogin(e)}>
-          <div className="auth-input">
-            <HiOutlineEnvelope />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              aria-label="Email"
-            />
-          </div>
-          <div className="auth-input">
-            <HiOutlineEyeSlash />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              aria-label="Password"
-            />
-          </div>
+      <p className="small">
+        New here? <Link to="/signup">Create an account</Link>
+      </p>
 
-          <div className="auth-meta-row">
-            <label className="auth-checkbox">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Remember me</span>
-            </label>
-            <button type="button" className="auth-link-btn">
-              Forgot Password?
-            </button>
-          </div>
-
-          <button type="submit" className="btn primary auth-submit" disabled={loggingIn}>
-            {loggingIn ? 'Logging in…' : 'Log in'}
-          </button>
-        </form>
-
-        <p className="small">
-          New here? <Link to="/signup">Create an account</Link>
+      {!googleConfigured && (
+        <p className="error">
+          Google OAuth is currently disabled because the client credentials are missing or still set to placeholders.
         </p>
+      )}
+      {oauthReturnFailed && (
+        <p className="error">
+          Google sign-in could not attach a session to this browser. Open the app at{' '}
+          <strong>http://localhost:5173</strong>, add{' '}
+          <code>http://localhost:5173/login/oauth2/code/google</code> in Google Cloud Console, keep{' '}
+          <code>VITE_API_URL</code> empty in dev, and set <code>VITE_DEV_PROXY_TARGET</code> to the{' '}
+          <strong>exact</strong> URL where Spring Boot is listening (often <code>http://localhost:8080</code> — if
+          your API uses another port, both sides must match or <code>/api/auth/me</code> will fail and you will see this
+          message).
+        </p>
+      )}
+    </section>
+  )
 
-        {!googleConfigured && (
-          <p className="error">
-            Google OAuth is currently disabled because the client credentials are missing or still set to placeholders.
-          </p>
-        )}
-        {oauthReturnFailed && (
-          <p className="error">
-            Google sign-in could not attach a session to this browser. Open the app at{' '}
-            <strong>http://localhost:5173</strong>, add{' '}
-            <code>http://localhost:5173/login/oauth2/code/google</code> in Google Cloud Console, keep{' '}
-            <code>VITE_API_URL</code> empty in dev, and set <code>VITE_DEV_PROXY_TARGET</code> to the{' '}
-            <strong>exact</strong> URL where Spring Boot is listening (often <code>http://localhost:8080</code> — if
-            your API uses another port, both sides must match or <code>/api/auth/me</code> will fail and you will see
-            this message).
-          </p>
-        )}
-      </section>
+  const devLoginCard = (
+    <section className="auth-card">
+      <div className="auth-header">
+        <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-[#d4e2ff]">
+          <HiOutlineSparkles className="text-violet-300" aria-hidden />
+          Development login
+        </h2>
+        <p className="small">Start API with: mvn spring-boot:run -Dspring-boot.run.profiles=dev</p>
+      </div>
+      <form onSubmit={(e) => void devLogin(e)}>
+        <div className="field">
+          <label>Email</label>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" />
+        </div>
+        <div className="field">
+          <label>Display name</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label>Role</label>
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="TECHNICIAN">TECHNICIAN</option>
+          </select>
+        </div>
+        {err && <p className="error">{err}</p>}
+        <button type="submit" className="btn primary auth-submit">
+          Dev sign-in
+        </button>
+      </form>
+    </section>
+  )
+
+  return (
+    <div className={showDev ? 'auth-shell login-dev-layout' : 'auth-shell split'}>
+      {showDev ? (
+        <div className="auth-login-dev-row">
+          {loginCard}
+          {devLoginCard}
+        </div>
+      ) : (
+        loginCard
+      )}
       <section className="auth-card secondary">
         <div className="auth-header">
           <p className="auth-brand">New to Smart Campus?</p>
@@ -219,37 +264,6 @@ export function LoginPage() {
           <p className="small">Use Google in production, or development signup in local mode.</p>
         </div>
       </section>
-      {showDev && (
-        <div className="card">
-          <h2 className="flex items-center gap-2">
-            <HiOutlineSparkles className="text-violet-300" />
-            Development login
-          </h2>
-          <p className="small">Start API with: mvn spring-boot:run -Dspring-boot.run.profiles=dev</p>
-          <form onSubmit={(e) => void devLogin(e)}>
-            <div className="field">
-              <label>Email</label>
-              <input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" />
-            </div>
-            <div className="field">
-              <label>Display name</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
-            <div className="field">
-              <label>Role</label>
-              <select value={role} onChange={(e) => setRole(e.target.value)}>
-                <option value="USER">USER</option>
-                <option value="ADMIN">ADMIN</option>
-                <option value="TECHNICIAN">TECHNICIAN</option>
-              </select>
-            </div>
-            {err && <p className="error">{err}</p>}
-            <button type="submit" className="btn primary">
-              Dev sign-in
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   )
 }
