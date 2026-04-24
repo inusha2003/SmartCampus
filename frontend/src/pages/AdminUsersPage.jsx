@@ -363,11 +363,20 @@ export function AdminUsersPage() {
             <div className="card-grid">
                 {filteredUsers.map((u) => (
                     <div key={u.id} className="card stack">
-                        <div className="flex items-center justify-between">
-                            <h2 style={{ color: 'var(--sc-navy-900)' }}>
-                                {editingUserId === u.id ? editName : u.displayName}
+                        <div className="flex items-center justify-between gap-2">
+                            <h2
+                                className="flex min-w-0 items-center gap-2"
+                                style={{ color: 'var(--sc-navy-900)' }}
+                            >
+                                <HiOutlineUser
+                                    className="h-6 w-6 shrink-0 text-cyan-500"
+                                    aria-hidden
+                                />
+                                <span className="min-w-0 truncate">
+                                    {editingUserId === u.id ? editName : u.displayName}
+                                </span>
                             </h2>
-                            <span className="tag" style={{ opacity: 0.8 }}>{u.role}</span>
+                            <span className="tag shrink-0" style={{ opacity: 0.8 }}>{u.role}</span>
                         </div>
                         {editingUserId === u.id ? (
                             <>
