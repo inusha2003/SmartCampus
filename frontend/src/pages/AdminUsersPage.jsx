@@ -4,6 +4,7 @@ import { api, fetchCsrf } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import {
     HiOutlineEnvelope,
+    HiOutlineLockClosed,
     HiOutlineShieldCheck,
     HiOutlineUser,
     HiOutlineUserGroup,
@@ -327,7 +328,10 @@ export function AdminUsersPage() {
                         />
                     </div>
                     <div className="field">
-                        <label>Password</label>
+                        <label className="flex items-center gap-2">
+                            <HiOutlineLockClosed className="h-4 w-4 shrink-0 text-cyan-500" aria-hidden />
+                            Password
+                        </label>
                         <input
                             type="password"
                             value={newPassword}
