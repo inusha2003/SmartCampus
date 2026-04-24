@@ -4,6 +4,8 @@ import { api, fetchCsrf } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import {
     HiOutlineEnvelope,
+    HiOutlineEye,
+    HiOutlineEyeSlash,
     HiOutlineLockClosed,
     HiOutlineShieldCheck,
     HiOutlineUser,
@@ -21,6 +23,7 @@ export function AdminUsersPage() {
     const [newEmail, setNewEmail] = useState('')
     const [newName, setNewName] = useState('')
     const [newPassword, setNewPassword] = useState('')
+    const [showNewPassword, setShowNewPassword] = useState(false)
     const [newRole, setNewRole] = useState('USER')
     const [creating, setCreating] = useState(false)
     const [editingUserId, setEditingUserId] = useState(null)
@@ -112,6 +115,7 @@ export function AdminUsersPage() {
         setNewEmail('')
         setNewName('')
         setNewPassword('')
+        setShowNewPassword(false)
         setNewRole('USER')
         await load()
         setCreating(false)
@@ -332,14 +336,29 @@ export function AdminUsersPage() {
                             <HiOutlineLockClosed className="h-4 w-4 shrink-0 text-cyan-500" aria-hidden />
                             Password
                         </label>
-                        <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            required
-                            minLength={6}
-                            placeholder="Minimum 6 characters"
-                        />
+                        <div className="relative w-full max-w-[440px]">
+                            <input
+                                type={showNewPassword ? 'text' : 'password'}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                placeholder="Minimum 6 characters"
+                                className="pr-11"
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-cyan-400 transition hover:bg-white/5 hover:text-cyan-300"
+                                onClick={() => setShowNewPassword((v) => !v)}
+                                aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showNewPassword ? (
+                                    <HiOutlineEyeSlash className="h-5 w-5" aria-hidden />
+                                ) : (
+                                    <HiOutlineEye className="h-5 w-5" aria-hidden />
+                                )}
+                            </button>
+                        </div>
                     </div>
                     <div className="field" style={{ maxWidth: 300 }}>
                         <label className="flex items-center gap-2">
