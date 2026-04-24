@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom'
 import { api, fetchCsrf } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import {
+    HiOutlineEnvelope,
     HiOutlineShieldCheck,
     HiOutlineUserGroup,
     HiOutlineUserPlus,
@@ -300,7 +301,10 @@ export function AdminUsersPage() {
                 </h2>
                 <form onSubmit={(e) => void addUser(e)}>
                     <div className="field">
-                        <label>Email</label>
+                        <label className="flex items-center gap-2">
+                            <HiOutlineEnvelope className="h-4 w-4 shrink-0 text-cyan-500" aria-hidden />
+                            Email
+                        </label>
                         <input
                             type="email"
                             value={newEmail}
