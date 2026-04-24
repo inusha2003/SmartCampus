@@ -25,6 +25,7 @@ export function AdminUsersPage() {
     const [newPassword, setNewPassword] = useState('')
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [newRole, setNewRole] = useState('USER')
+    const [showAddUserForm, setShowAddUserForm] = useState(false)
     const [creating, setCreating] = useState(false)
     const [editingUserId, setEditingUserId] = useState(null)
     const [editEmail, setEditEmail] = useState('')
@@ -117,6 +118,7 @@ export function AdminUsersPage() {
         setNewPassword('')
         setShowNewPassword(false)
         setNewRole('USER')
+        setShowAddUserForm(false)
         await load()
         setCreating(false)
     }
@@ -301,10 +303,30 @@ export function AdminUsersPage() {
             )}
 
             <div className="card">
-                <h2 className="flex items-center gap-2" style={{ color: 'var(--sc-navy-900)' }}>
-                    <HiOutlineUserPlus className="text-cyan-300" aria-hidden />
-                    Add user manually
-                </h2>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="flex items-center gap-2" style={{ color: 'var(--sc-navy-900)' }}>
+                        <HiOutlineUserPlus className="text-cyan-300" aria-hidden />
+                        Add user manually
+                    </h2>
+                    {showAddUserForm ? (
+                        <button
+                            type="button"
+                            className="btn ghost"
+                            onClick={() => setShowAddUserForm(false)}
+                        >
+                            Close form
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            className="btn primary"
+                            onClick={() => setShowAddUserForm(true)}
+                        >
+                            Open form
+                        </button>
+                    )}
+                </div>
+                {showAddUserForm && (
                 <form onSubmit={(e) => void addUser(e)}>
                     <div className="field">
                         <label className="flex items-center gap-2">
@@ -375,6 +397,7 @@ export function AdminUsersPage() {
                         {creating ? 'Creating…' : 'Add user'}
                     </button>
                 </form>
+                )}
             </div>
 
             {err && <p className="error">{err}</p>}
