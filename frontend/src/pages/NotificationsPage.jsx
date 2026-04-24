@@ -32,6 +32,17 @@ export function NotificationsPage() {
     await load()
   }
 
+  const deleteAll = async () => {
+    if (items.length === 0) return
+    if (!window.confirm('Delete all notifications? This cannot be undone.')) return
+    try {
+      await api.delete('/api/notifications')
+      await load()
+    } catch {
+      window.alert('Could not delete notifications. Try again.')
+    }
+  }
+
   return (
     <RequireUser>
     <div>
@@ -74,9 +85,19 @@ export function NotificationsPage() {
           <p className="text-3xl font-bold metric-value">{items.length}</p>
         </div>
       </div>
-      <button type="button" className="btn ghost" onClick={() => void markAll()}>
-        Mark all read
-      </button>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <button type="button" className="btn ghost" onClick={() => void markAll()}>
+          Mark all read
+        </button>
+        <button
+          type="button"
+          className="btn danger"
+          disabled={items.length === 0}
+          onClick={() => void deleteAll()}
+        >
+          Delete all
+        </button>
+      </div>
       {items.map((n) => (
         <div key={n.id} className="card" style={{ opacity: n.read ? 0.65 : 1 }}>
           <span className="tag">{n.type}</span>
