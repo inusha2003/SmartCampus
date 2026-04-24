@@ -445,44 +445,44 @@ export function AdminUsersPage() {
                         )}
                         <div className="field mt-3">
                             <label>Update Role</label>
-                            <div className="row-actions">
-                                <select
-                                    value={u.role}
-                                    onChange={(e) => void changeRole(u.id, e.target.value)}
-                                    style={{ flex: 1 }}
-                                >
-                                    <option value="USER">USER</option>
-                                    <option value="TECHNICIAN">TECHNICIAN</option>
-                                    <option value="ADMIN">ADMIN</option>
-                                </select>
-                                {editingUserId === u.id ? (
-                                    <>
-                                        <button
-                                            type="button"
-                                            className="btn primary"
-                                            onClick={() => void saveEdit()}
-                                            disabled={savingEdit}
-                                        >
-                                            {savingEdit ? 'Saving…' : 'Save'}
-                                        </button>
-                                        <button type="button" className="btn ghost" onClick={cancelEdit}>
-                                            Cancel
-                                        </button>
-                                    </>
-                                ) : (
-                                    <button type="button" className="btn ghost" onClick={() => startEdit(u)}>
-                                        Edit
+                            <select
+                                value={u.role}
+                                onChange={(e) => void changeRole(u.id, e.target.value)}
+                                className="w-full max-w-[440px]"
+                            >
+                                <option value="USER">USER</option>
+                                <option value="TECHNICIAN">TECHNICIAN</option>
+                                <option value="ADMIN">ADMIN</option>
+                            </select>
+                        </div>
+                        <div className="row-actions mt-2">
+                            {editingUserId === u.id ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="btn primary"
+                                        onClick={() => void saveEdit()}
+                                        disabled={savingEdit}
+                                    >
+                                        {savingEdit ? 'Saving…' : 'Save'}
                                     </button>
-                                )}
-                                <button
-                                    type="button"
-                                    className="btn danger"
-                                    onClick={() => void deleteUser(u.id)}
-                                    disabled={deletingUserId === u.id}
-                                >
-                                    {deletingUserId === u.id ? 'Deleting…' : 'Delete'}
+                                    <button type="button" className="btn ghost" onClick={cancelEdit}>
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <button type="button" className="btn ghost" onClick={() => startEdit(u)}>
+                                    Edit
                                 </button>
-                            </div>
+                            )}
+                            <button
+                                type="button"
+                                className="btn danger"
+                                onClick={() => void deleteUser(u.id)}
+                                disabled={deletingUserId === u.id}
+                            >
+                                {deletingUserId === u.id ? 'Deleting…' : 'Delete'}
+                            </button>
                         </div>
                     </div>
                 ))}
