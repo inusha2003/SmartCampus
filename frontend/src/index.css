@@ -338,10 +338,16 @@
   }
 
   .auth-shell.login-dev-layout .auth-card.secondary {
-    margin-top: 0;
+    margin-top: 1.5rem;
     max-width: 640px;
     width: 100%;
     justify-self: center;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.login-dev-layout .auth-card.secondary {
+      margin-top: 2.25rem;
+    }
   }
 
   .auth-card {
@@ -354,14 +360,14 @@
     background: rgba(10, 19, 37, 0.86);
   }
 
-  /* Login split (prod: login | signup): nudge sign-up card slightly lower */
+  /* Login split (prod: login | signup): nudge sign-up card lower */
   .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
-    margin-top: 1.25rem;
+    margin-top: 2rem;
   }
 
   @media (min-width: 900px) {
     .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
-      margin-top: 2.5rem;
+      margin-top: 3.5rem;
     }
   }
 
