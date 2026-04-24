@@ -109,6 +109,19 @@
     color: #e9f0ff;
   }
 
+  /* Softer cyan tint — e.g. Admin user card “Edit” vs neutral ghost */
+  .btn.soft {
+    @apply border;
+    border-color: rgba(110, 190, 255, 0.42);
+    background: rgba(45, 100, 180, 0.18);
+    color: #d2ecff;
+  }
+
+  .btn.soft:hover {
+    background: rgba(55, 120, 200, 0.28);
+    border-color: rgba(150, 210, 255, 0.55);
+  }
+
   .btn.danger {
     @apply border;
     border-color: rgba(255, 115, 136, 0.4);

@@ -471,7 +471,7 @@ export function AdminUsersPage() {
                                     </button>
                                 </>
                             ) : (
-                                <button type="button" className="btn ghost" onClick={() => startEdit(u)}>
+                                <button type="button" className="btn soft" onClick={() => startEdit(u)}>
                                     Edit
                                 </button>
                             )}
