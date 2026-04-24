@@ -477,7 +477,7 @@ export function AdminUsersPage() {
                             )}
                             <button
                                 type="button"
-                                className="btn danger"
+                                className="btn danger-soft"
                                 onClick={() => void deleteUser(u.id)}
                                 disabled={deletingUserId === u.id}
                             >
