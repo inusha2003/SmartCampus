@@ -63,4 +63,16 @@ public class NotificationService {
     public void deleteAllForUser(Long userId) {
         notificationRepository.deleteByUser_Id(userId);
     }
+
+    @Transactional
+    public void deleteForUser(Long notificationId, Long userId) {
+        Notification n = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new com.smartcampus.hub.exception.ApiException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "NOT_FOUND", "Notification not found"));
+        if (!n.getUser().getId().equals(userId)) {
+            throw new com.smartcampus.hub.exception.ApiException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "FORBIDDEN", "Not your notification");
+        }
+        notificationRepository.delete(n);
+    }
 }

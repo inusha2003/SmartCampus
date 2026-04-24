@@ -32,6 +32,15 @@ export function NotificationsPage() {
     await load()
   }
 
+  const removeOne = async (id) => {
+    try {
+      await api.delete(`/api/notifications/${id}`)
+      await load()
+    } catch {
+      window.alert('Could not delete this notification. Try again.')
+    }
+  }
+
   const deleteAll = async () => {
     if (items.length === 0) return
     if (!window.confirm('Delete all notifications? This cannot be undone.')) return
@@ -105,11 +114,16 @@ export function NotificationsPage() {
           <h2 style={{ marginTop: '0.5rem', color: 'var(--sc-navy-900)' }}>{n.title}</h2>
           <p className="small">{new Date(n.createdAt).toLocaleString()}</p>
           <p>{n.message}</p>
-          {!n.read && (
-            <button type="button" className="btn ghost" onClick={() => void mark(n.id)}>
-              Mark read
+          <div className="mt-3 flex flex-wrap gap-2">
+            {!n.read && (
+              <button type="button" className="btn ghost" onClick={() => void mark(n.id)}>
+                Mark read
+              </button>
+            )}
+            <button type="button" className="btn danger" onClick={() => void removeOne(n.id)}>
+              Delete
             </button>
-          )}
+          </div>
         </div>
       ))}
     </div>
