@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext'
 import {
     HiOutlineEnvelope,
     HiOutlineShieldCheck,
+    HiOutlineUser,
     HiOutlineUserGroup,
     HiOutlineUserPlus,
     HiOutlineUsers,
@@ -314,7 +315,10 @@ export function AdminUsersPage() {
                         />
                     </div>
                     <div className="field">
-                        <label>Display name</label>
+                        <label className="flex items-center gap-2">
+                            <HiOutlineUser className="h-4 w-4 shrink-0 text-cyan-500" aria-hidden />
+                            Display name
+                        </label>
                         <input
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
