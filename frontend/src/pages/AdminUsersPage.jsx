@@ -342,7 +342,10 @@ export function AdminUsersPage() {
                         />
                     </div>
                     <div className="field" style={{ maxWidth: 300 }}>
-                        <label>Role</label>
+                        <label className="flex items-center gap-2">
+                            <HiOutlineShieldCheck className="h-4 w-4 shrink-0 text-cyan-500" aria-hidden />
+                            Role
+                        </label>
                         <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
                             <option value="USER">USER</option>
                             <option value="TECHNICIAN">TECHNICIAN</option>
