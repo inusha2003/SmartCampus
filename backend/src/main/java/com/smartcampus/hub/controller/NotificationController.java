@@ -41,6 +41,12 @@ public class NotificationController {
         notificationService.markAllRead(CurrentUser.requireUser().getId());
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteOne(@PathVariable Long id) {
+        notificationService.deleteForUser(id, CurrentUser.requireUser().getId());
+    }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAll() {
