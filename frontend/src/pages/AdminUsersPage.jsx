@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { api, fetchCsrf } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
-import { HiOutlineUsers, HiOutlineUserGroup, HiOutlineShieldCheck } from 'react-icons/hi2'
+import {
+    HiOutlineShieldCheck,
+    HiOutlineUserGroup,
+    HiOutlineUserPlus,
+    HiOutlineUsers,
+} from 'react-icons/hi2'
 
 export function AdminUsersPage() {
     const { user, loading: authLoading } = useAuth()
@@ -289,7 +294,10 @@ export function AdminUsersPage() {
             )}
 
             <div className="card">
-                <h2>Add user manually</h2>
+                <h2 className="flex items-center gap-2" style={{ color: 'var(--sc-navy-900)' }}>
+                    <HiOutlineUserPlus className="text-cyan-300" aria-hidden />
+                    Add user manually
+                </h2>
                 <form onSubmit={(e) => void addUser(e)}>
                     <div className="field">
                         <label>Email</label>
