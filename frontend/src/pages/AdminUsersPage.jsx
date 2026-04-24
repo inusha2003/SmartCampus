@@ -9,6 +9,7 @@ export function AdminUsersPage() {
     const [users, setUsers] = useState([])
     const [err, setErr] = useState(null)
     const [filter, setFilter] = useState('')
+    const [search, setSearch] = useState('')
     const [newEmail, setNewEmail] = useState('')
     const [newName, setNewName] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -109,8 +110,13 @@ export function AdminUsersPage() {
     }
 
     const filteredUsers = users.filter((u) => {
-        if (!filter) return true
-        return u.role === filter
+        if (filter && u.role !== filter) return false
+        const q = search.trim().toLowerCase()
+        if (!q) return true
+        const email = (u.email ?? '').toLowerCase()
+        const name = (u.displayName ?? '').toLowerCase()
+        const role = (u.role ?? '').toLowerCase()
+        return email.includes(q) || name.includes(q) || role.includes(q)
     })
 
     const startEdit = (u) => {
@@ -249,15 +255,38 @@ export function AdminUsersPage() {
                 </div>
             </div>
 
-            <div className="field" style={{ maxWidth: 300 }}>
-                <label>Filter by Role</label>
-                <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-                    <option value="">All Roles</option>
-                    <option value="USER">USER</option>
-                    <option value="TECHNICIAN">TECHNICIAN</option>
-                    <option value="ADMIN">ADMIN</option>
-                </select>
+            <div className="mb-4 flex flex-wrap items-end gap-4">
+                <div className="field" style={{ flex: '1 1 220px', maxWidth: 400 }}>
+                    <label htmlFor="admin-users-search">Search</label>
+                    <input
+                        id="admin-users-search"
+                        type="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Email, display name, or role"
+                        autoComplete="off"
+                        spellCheck={false}
+                    />
+                </div>
+                <div className="field" style={{ flex: '0 1 220px', maxWidth: 300 }}>
+                    <label htmlFor="admin-users-role-filter">Filter by role</label>
+                    <select
+                        id="admin-users-role-filter"
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                    >
+                        <option value="">All roles</option>
+                        <option value="USER">USER</option>
+                        <option value="TECHNICIAN">TECHNICIAN</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
             </div>
+            {search.trim() && (
+                <p className="small mb-4">
+                    Showing {filteredUsers.length} of {users.length} users
+                </p>
+            )}
 
             <div className="card">
                 <h2>Add user manually</h2>
