@@ -252,6 +252,22 @@ export function ReporterTicketsPage() {
   const [photoEditorSlot, setPhotoEditorSlot] = useState(null)
   const [editingTicketId, setEditingTicketId] = useState(null)
   const [err, setErr] = useState(null)
+  const defaultContactName = useMemo(
+    () =>
+      String(user?.displayName || '')
+        .replace(/[^\p{L}\s'.-]/gu, '')
+        .trim()
+        .slice(0, MAX_CONTACT_NAME),
+    [MAX_CONTACT_NAME, user?.displayName],
+  )
+  const defaultContactEmail = useMemo(
+    () =>
+      String(user?.email || '')
+        .replace(/[^\p{L}\p{N}@.]/gu, '')
+        .trim()
+        .slice(0, MAX_CONTACT_EMAIL),
+    [MAX_CONTACT_EMAIL, user?.email],
+  )
 
   const photoPreviewUrls = useMemo(
     () => photoSlots.map((f) => (f ? URL.createObjectURL(f) : null)),
@@ -296,12 +312,18 @@ export function ReporterTicketsPage() {
     if (user) void load().catch(() => setErr('Failed to load tickets'))
   }, [user])
 
+  useEffect(() => {
+    if (editingTicketId != null) return
+    setContactName((prev) => (prev.trim() ? prev : defaultContactName))
+    setContactEmail((prev) => (prev.trim() ? prev : defaultContactEmail))
+  }, [defaultContactEmail, defaultContactName, editingTicketId])
+
   const resetFormToNew = () => {
     setEditingTicketId(null)
     setDescription('')
     setTitle('')
-    setContactName('')
-    setContactEmail('')
+    setContactName(defaultContactName)
+    setContactEmail(defaultContactEmail)
     setContactPhone('')
     setPhotoSlots(Array.from({ length: MAX_TICKET_PHOTOS }, () => null))
     setRelatedIncident('')
