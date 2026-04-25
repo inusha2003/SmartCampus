@@ -73,7 +73,7 @@ export function CataloguePage() {
           <p className="tag">Smart Campus Experience</p>
           <h1 className="mt-3 flex items-center gap-2">
             <HiOutlineBuildingOffice2 className="text-cyan-300" />
-            Book Spaces With Confidence
+            Book Spaces With Confidencee
           </h1>
           <p className="small max-w-2xl">
             Discover lecture halls, labs, and equipment in one colorful dashboard. Filter quickly,
@@ -93,7 +93,7 @@ export function CataloguePage() {
         Facilities &amp; assets
       </h1>
       <p className="small">
-        Browse bookable rooms, labs, and equipment. Sign in to request a booking.
+        Browse bookable rooms, labss, and equipments . Sign in to request a booking.
       </p>
       <div className="stats-grid">
         <div className="card">
