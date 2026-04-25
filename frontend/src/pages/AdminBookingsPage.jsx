@@ -24,7 +24,7 @@ export function AdminBookingsPage() {
   if (authLoading) {
     return (
       <div className="card" style={{ maxWidth: 480 }}>
-        <p className="small">Checking your session…</p>
+        <p className="small">Verifying your access</p>
       </div>
     )
   }
@@ -61,7 +61,7 @@ export function AdminBookingsPage() {
             <p className="glass-chip">Approval Desk</p>
             <h1 className="mt-3 flex items-center gap-2">
               <HiOutlineClipboardDocumentList className="text-cyan-300" />
-              <span className="gradient-title">Review Booking Requests Fast</span>
+              <span className="gradient-title">Booking Queue Management</span>
             </h1>
             <p className="small max-w-2xl">
               Process booking requests with a clean queue, clear status indicators, and quick

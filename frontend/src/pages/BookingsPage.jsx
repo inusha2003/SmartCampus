@@ -173,7 +173,7 @@ export function BookingsPage() {
             <p className="glass-chip">Booking Workflow</p>
             <h1 className="mt-3 flex items-center gap-2">
               <HiOutlineCalendarDays className="text-cyan-300" />
-              <span className="gradient-title">Plan Your Campus Sessions</span>
+              <span className="gradient-title">Manage Your Reservations</span>
             </h1>
             <p className="small max-w-2xl">
               Submit requests, track approval stages, and manage confirmed slots from one
@@ -190,7 +190,7 @@ export function BookingsPage() {
 
       <h1 className="flex items-center gap-2">
         <HiOutlineCalendarDays className="text-cyan-300" />
-        My  bookings
+        My bookings
       </h1>
       <div className="card-grid">
         <div className="card">
@@ -198,7 +198,7 @@ export function BookingsPage() {
           <p className="text-3xl font-bold metric-value">{bookings.filter((x) => x.status === 'PENDING').length}</p>
         </div>
         <div className="card">
-          <p className="small flex items-center gap-2"><HiOutlineCheckCircle className="text-emerald-300" /> Approved</p>
+          <p className="small flex items-center gap-2"><HiOutlineCheckCircle className="text-emerald-300" />Approved</p>
           <p className="text-3xl font-bold metric-value">{bookings.filter((x) => x.status === 'APPROVED').length}</p>
         </div>
         <div className="card">
