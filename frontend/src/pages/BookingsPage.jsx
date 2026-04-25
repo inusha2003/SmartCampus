@@ -176,7 +176,8 @@ export function BookingsPage() {
               <span className="gradient-title">Manage Your Reservations</span>
             </h1>
             <p className="small max-w-2xl">
-              Request resources, monitor approval status, and manage your upcoming bookings in real-time.
+              Submit requests, track approval stages, and manage confirmed slots from one
+              colorful timeline-inspired dashboard.
             </p>
           </div>
           <img
