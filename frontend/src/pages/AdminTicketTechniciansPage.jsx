@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom'
 import { api, fetchCsrf } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { AdminTicketsSubnav } from '../components/AdminTicketsSubnav'
-import { HiOutlineUserGroup, HiOutlinePlus } from 'react-icons/hi2'
+import { HiOutlineUserGroup } from 'react-icons/hi2'
 
 export function AdminTicketTechniciansPage() {
   const TECH_CATEGORIES = ['IT Support', 'Maintenance', 'Electrical Issues', 'Cleaning and Waste', 'Fire']
@@ -173,7 +173,6 @@ export function AdminTicketTechniciansPage() {
             inputMode="numeric"
           />
           <button className="btn primary" type="submit" disabled={adding}>
-            <HiOutlinePlus aria-hidden />
             {adding ? 'Adding…' : 'Add technician'}
           </button>
         </form>
