@@ -56,6 +56,7 @@ public class TicketService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
     private final NotificationService notificationService;
+    private final IssueEmailService issueEmailService;
 
     @Transactional
     public Ticket create(User reporter, Long resourceId, String locationText, String title, String category,
@@ -340,6 +341,9 @@ public class TicketService {
         ticketRepository.save(t);
         if (status != null && status != old) {
             notifyTicketStakeholders(t, "Ticket " + t.getId() + " is now " + status.name().replace('_', ' '));
+            if (admin && status == TicketStatus.CLOSED) {
+                issueEmailService.sendSolvedEmail(t);
+            }
         }
         return t;
     }
