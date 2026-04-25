@@ -75,3 +75,14 @@ export function ticketAttachmentDownloadUrl(ticketId, attachmentId) {
   }
   return path
 }
+
+/** Before/after settlement photos for a ticket (`<img src>` with session cookies). */
+export function ticketSettlementDownloadUrl(ticketId, which) {
+  const slot = which === 'before' ? 'before' : 'after'
+  const path = `/api/tickets/${ticketId}/settlement/${slot}/download`
+  const b = api.defaults.baseURL
+  if (typeof b === 'string' && b.length > 0) {
+    return `${b.replace(/\/$/, '')}${path}`
+  }
+  return path
+}

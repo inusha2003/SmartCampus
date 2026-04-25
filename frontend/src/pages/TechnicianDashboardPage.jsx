@@ -1,17 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, NavLink } from 'react-router-dom'
-import {
-  HiBolt,
-  HiSquares2X2,
-  HiClipboardDocumentCheck,
-  HiChatBubbleLeftRight,
-  HiCog6Tooth,
-  HiBell,
-  HiArrowPath,
-} from 'react-icons/hi2'
+import { Link, Navigate } from 'react-router-dom'
+import { HiBell, HiArrowPath } from 'react-icons/hi2'
 import { api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { getDashboardPath } from '../auth/roleRouting'
+import { TechnicianTechPanelShell } from '../components/TechnicianTechPanelShell'
 
 function buildConicGradient(pending, inProgress, completed) {
   const total = pending + inProgress + completed
@@ -151,38 +144,7 @@ export function TechnicianDashboardPage() {
   const today = formatHeaderDate(new Date())
 
   return (
-    <div className="tech-panel-root">
-      <aside className="tech-panel-sidebar">
-        <div className="tech-panel-brand">
-          <span className="tech-panel-brand-icon" aria-hidden>
-            <HiBolt />
-          </span>
-          <div>
-            <div className="tech-panel-brand-title">TechPanel</div>
-            <div className="tech-panel-brand-sub">Campus operations</div>
-          </div>
-        </div>
-        <nav className="tech-panel-nav" aria-label="Technician panel">
-          <NavLink end to="/dashboard/technician" className={({ isActive }) => `tech-panel-nav-item${isActive ? ' is-active' : ''}`}>
-            <HiSquares2X2 className="tech-panel-nav-ico" aria-hidden />
-            Dashboard
-          </NavLink>
-          <NavLink to="/tickets" className={({ isActive }) => `tech-panel-nav-item${isActive ? ' is-active' : ''}`}>
-            <HiClipboardDocumentCheck className="tech-panel-nav-ico" aria-hidden />
-            Tasks
-          </NavLink>
-          <NavLink to="/notifications" className={({ isActive }) => `tech-panel-nav-item${isActive ? ' is-active' : ''}`}>
-            <HiChatBubbleLeftRight className="tech-panel-nav-ico" aria-hidden />
-            Activity
-          </NavLink>
-          <NavLink to="/profile" className={({ isActive }) => `tech-panel-nav-item${isActive ? ' is-active' : ''}`}>
-            <HiCog6Tooth className="tech-panel-nav-ico" aria-hidden />
-            Settings
-          </NavLink>
-        </nav>
-      </aside>
-
-      <div className="tech-panel-main">
+    <TechnicianTechPanelShell>
         <header className="tech-panel-header">
           <div>
             <p className="tech-panel-date">{today}</p>
@@ -345,7 +307,6 @@ export function TechnicianDashboardPage() {
             Refresh now
           </button>
         </div>
-      </div>
-    </div>
+    </TechnicianTechPanelShell>
   )
 }

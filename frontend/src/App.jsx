@@ -17,6 +17,7 @@ import { RoleHomePage } from './pages/RoleHomePage'
 import { SignupPage } from './pages/SignupPage'
 import { StudentDashboardPage } from './pages/StudentDashboardPage'
 import { TechnicianDashboardPage } from './pages/TechnicianDashboardPage'
+import { TechnicianSettlementsPage } from './pages/TechnicianSettlementsPage'
 import { TicketDetailPage } from './pages/TicketDetailPage'
 import { TicketsPage } from './pages/TicketsPage'
 
@@ -31,6 +32,7 @@ function App() {
             <Route path="/dashboard/admin" element={<AdminDashboardPage />} />
             <Route path="/dashboard/student" element={<StudentDashboardPage />} />
             <Route path="/dashboard/technician" element={<TechnicianDashboardPage />} />
+            <Route path="/technician/settlements" element={<TechnicianSettlementsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
