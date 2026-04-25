@@ -28,6 +28,8 @@ export function TechnicianSettlementsPage() {
   const [saveErr, setSaveErr] = useState(null)
   const [saving, setSaving] = useState(false)
   const [cacheBust, setCacheBust] = useState(0)
+  const [beforeBroken, setBeforeBroken] = useState(false)
+  const [afterBroken, setAfterBroken] = useState(false)
 
   const ticketIdNum = selectedTicketId ? Number(selectedTicketId) : null
 
@@ -77,6 +79,11 @@ export function TechnicianSettlementsPage() {
     })
   }, [assignedTickets])
 
+  useEffect(() => {
+    setBeforeBroken(false)
+    setAfterBroken(false)
+  }, [ticketIdNum, cacheBust])
+
   const loadDto = useCallback(async () => {
     if (!ticketIdNum) {
       setDto(null)
@@ -87,8 +94,23 @@ export function TechnicianSettlementsPage() {
       setDto(data)
       setLoadErr(null)
     } catch (e) {
-      setLoadErr(e?.response?.data?.message || e?.message || 'Could not load settlement for this ticket.')
-      setDto(null)
+      const status = e?.response?.status
+      if (status === 404) {
+        // Some environments may have older backend instances without this route yet.
+        // Show an empty state instead of a hard error banner.
+        setDto({
+          ticketId: ticketIdNum,
+          beforePresent: false,
+          afterPresent: false,
+          beforeFilename: null,
+          afterFilename: null,
+          updatedAt: null,
+        })
+        setLoadErr(null)
+      } else {
+        setLoadErr(e?.response?.data?.message || e?.message || 'Could not load settlement for this ticket.')
+        setDto(null)
+      }
     }
   }, [ticketIdNum])
 
@@ -115,7 +137,10 @@ export function TechnicianSettlementsPage() {
       setCacheBust((n) => n + 1)
     } catch (e) {
       const d = e?.response?.data
+      const status = e?.response?.status
       const msg =
+        (status === 404 &&
+          'Settlement endpoint is not available on backend yet. Restart backend and try again.') ||
         (typeof d?.message === 'string' && d.message) ||
         (typeof d?.error === 'string' && d.error) ||
         e?.message ||
@@ -140,9 +165,13 @@ export function TechnicianSettlementsPage() {
   const today = formatHeaderDate(new Date())
 
   const beforeServerSrc =
-    ticketIdNum && dto?.beforePresent ? `${ticketSettlementDownloadUrl(ticketIdNum, 'before')}?v=${cacheBust}` : null
+    ticketIdNum && dto?.beforePresent && !beforeBroken
+      ? `${ticketSettlementDownloadUrl(ticketIdNum, 'before')}?v=${cacheBust}`
+      : null
   const afterServerSrc =
-    ticketIdNum && dto?.afterPresent ? `${ticketSettlementDownloadUrl(ticketIdNum, 'after')}?v=${cacheBust}` : null
+    ticketIdNum && dto?.afterPresent && !afterBroken
+      ? `${ticketSettlementDownloadUrl(ticketIdNum, 'after')}?v=${cacheBust}`
+      : null
 
   return (
     <TechnicianTechPanelShell>
@@ -234,7 +263,12 @@ export function TechnicianSettlementsPage() {
             {beforePreviewUrl ? (
               <img src={beforePreviewUrl} alt="Selected before preview" className="tech-settlements-img" />
             ) : beforeServerSrc ? (
-              <img src={beforeServerSrc} alt="Saved before" className="tech-settlements-img" />
+              <img
+                src={beforeServerSrc}
+                alt="Saved before"
+                className="tech-settlements-img"
+                onError={() => setBeforeBroken(true)}
+              />
             ) : (
               <div className="tech-settlements-placeholder small">No before image yet</div>
             )}
@@ -268,7 +302,12 @@ export function TechnicianSettlementsPage() {
             {afterPreviewUrl ? (
               <img src={afterPreviewUrl} alt="Selected after preview" className="tech-settlements-img" />
             ) : afterServerSrc ? (
-              <img src={afterServerSrc} alt="Saved after" className="tech-settlements-img" />
+              <img
+                src={afterServerSrc}
+                alt="Saved after"
+                className="tech-settlements-img"
+                onError={() => setAfterBroken(true)}
+              />
             ) : (
               <div className="tech-settlements-placeholder small">No after image yet</div>
             )}
@@ -304,7 +343,7 @@ export function TechnicianSettlementsPage() {
           disabled={saving || !ticketIdNum}
           onClick={() => void submit()}
         >
-          {saving ? 'Saving…' : 'Save images'}
+          {saving ? 'Submitting…' : 'Submit'}
         </button>
         <button
           type="button"

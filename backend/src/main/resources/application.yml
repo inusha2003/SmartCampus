@@ -20,6 +20,20 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+  # Optional: set MAIL_HOST (+ user/pass) so admin "Marked" sends "Your issue has been solved" by email.
+  # If MAIL_HOST is empty, no JavaMailSender is configured and email is skipped (see logs).
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_STARTTLS:true}
+            required: ${MAIL_STARTTLS_REQUIRED:true}
 
 server:
   port: 8080
@@ -35,6 +49,11 @@ server:
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
   upload-dir: ${UPLOAD_DIR:./uploads}
+  # From address for outbound mail (admin "Marked" → user "Your issue has been solved").
+  mail:
+    from: ${MAIL_FROM:no-reply@smartcampus.local}
+    # Test override recipient (always receives solved emails on admin Marked click).
+    force-to: ${MAIL_FORCE_TO:dsk567d@gmail.com}
 
 spring.security.oauth2.client.registration.google:
   client-id: ${GOOGLE_CLIENT_ID:replace-me.apps.googleusercontent.com}

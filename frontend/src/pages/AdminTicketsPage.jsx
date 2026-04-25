@@ -260,7 +260,7 @@ export function AdminTicketsPage() {
     }
   }
 
-  const closeTicket = async () => {
+  const markTicket = async () => {
     if (!detail) return
     const notes = (detail.resolutionNotes || '').trim()
     if (!notes) {
@@ -280,7 +280,7 @@ export function AdminTicketsPage() {
       await loadList()
       await loadDetail(detail.id)
     } catch {
-      setErr('Close failed')
+      setErr('Mark failed')
     } finally {
       setSaving(false)
     }
@@ -421,9 +421,15 @@ export function AdminTicketsPage() {
                   <button type="button" className="btn danger admin-tickets-btn-compact" onClick={() => void deleteTicket()}>
                     Delete
                   </button>
-                  <button type="button" className="btn ghost admin-tickets-btn-compact" onClick={() => void closeTicket()} disabled={saving}>
-                    Close
-                  </button>
+                  {detail.status === 'RESOLVED' ? (
+                    <button type="button" className="btn primary admin-tickets-btn-compact" onClick={() => void markTicket()} disabled={saving}>
+                      Marked
+                    </button>
+                  ) : detail.status !== 'CLOSED' ? (
+                    <button type="button" className="btn ghost admin-tickets-btn-compact" onClick={() => void markTicket()} disabled={saving}>
+                      Close
+                    </button>
+                  ) : null}
                 </div>
               </div>
 
@@ -443,6 +449,11 @@ export function AdminTicketsPage() {
 
               <section className="admin-tickets-panel-block">
                 <h3 className="admin-tickets-panel-label">Status &amp; assignment</h3>
+                {detail.status === 'RESOLVED' ? (
+                  <p className="small admin-tickets-tech-solved-note">
+                    Technician marked this issue as solved. Click <strong>Marked</strong> to confirm and notify the user by email.
+                  </p>
+                ) : null}
                 <div className="admin-tickets-assign-row">
                   <select
                     className="admin-tickets-select admin-tickets-select--grow"
@@ -513,9 +524,9 @@ export function AdminTicketsPage() {
               </section>
 
               <section className="admin-tickets-panel-block">
-                <h3 className="admin-tickets-panel-label">Settlements</h3>
+                <h3 className="admin-tickets-panel-label">After resolution</h3>
                 <p className="small admin-tickets-settlement-lead">
-                  Before and after photos uploaded by the assigned technician for this ticket.
+                  Before and after images submitted by the assigned technician after resolution.
                 </p>
                 {!settlement?.beforePresent && !settlement?.afterPresent ? (
                   <p className="admin-tickets-photos-empty small">No settlement photos yet.</p>

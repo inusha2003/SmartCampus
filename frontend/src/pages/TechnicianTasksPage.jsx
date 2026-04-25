@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { HiBell, HiArrowPath } from 'react-icons/hi2'
-import { api } from '../api/client'
+import { api, ticketAttachmentDownloadUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { getDashboardPath } from '../auth/roleRouting'
 import { TechnicianTechPanelShell } from '../components/TechnicianTechPanelShell'
@@ -57,11 +57,17 @@ function statusBadgeClass(status) {
   return `admin-tickets-status-badge admin-tickets-status-badge--${s}`
 }
 
+function isImageAttachment(a) {
+  if (a?.contentType && String(a.contentType).startsWith('image/')) return true
+  return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(a?.originalFilename || '')
+}
+
 export function TechnicianTasksPage() {
   const { user, loading: authLoading } = useAuth()
   const [tickets, setTickets] = useState([])
   const [loadState, setLoadState] = useState('loading')
   const [loadError, setLoadError] = useState(null)
+  const [solvingTicketId, setSolvingTicketId] = useState(null)
 
   const loadTickets = useCallback(async () => {
     if (!user?.id) return
@@ -85,6 +91,30 @@ export function TechnicianTasksPage() {
     const id = window.setInterval(loadTickets, 30_000)
     return () => window.clearInterval(id)
   }, [user?.id, loadTickets])
+
+  const markSolved = useCallback(
+    async (ticket) => {
+      if (!ticket?.id) return
+      setLoadError(null)
+      setSolvingTicketId(ticket.id)
+      try {
+        const existingNotes = String(ticket.resolutionNotes || '').trim()
+        await api.put(`/api/tickets/${ticket.id}`, {
+          status: 'RESOLVED',
+          resolutionNotes:
+            existingNotes || 'Resolved by technician. Ready for admin verification and mark as solved.',
+          assigneeUserId: ticket.assignedToId ? Number(ticket.assignedToId) : null,
+          rejectReason: null,
+        })
+        await loadTickets()
+      } catch (e) {
+        setLoadError(e?.response?.data?.message || e?.message || 'Could not mark ticket as solved.')
+      } finally {
+        setSolvingTicketId(null)
+      }
+    },
+    [loadTickets],
+  )
 
   const kpis = useMemo(() => {
     const inQueue = tickets.filter((t) => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length
@@ -246,6 +276,10 @@ export function TechnicianTasksPage() {
                   const reporterName = (t.contactName && t.contactName.trim()) || 'Reporter'
                   const reporterEmail = t.reporterEmail || t.contactEmail || '—'
                   const solved = t.status === 'RESOLVED' || t.status === 'CLOSED'
+                  const imageAtts = Array.isArray(t.attachments)
+                    ? t.attachments.filter(isImageAttachment)
+                    : []
+                  const firstImage = imageAtts[0] || null
                   const sameEmail =
                     t.assignedToEmail &&
                     user.email &&
@@ -261,6 +295,22 @@ export function TechnicianTasksPage() {
                           </h4>
                           <span className={statusBadgeClass(t.status)}>{String(t.status).replaceAll('_', ' ')}</span>
                         </div>
+                        {firstImage ? (
+                          <a
+                            className="tech-tasks-card-image-link"
+                            href={ticketAttachmentDownloadUrl(t.id, firstImage.id)}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={firstImage.originalFilename || 'Ticket image'}
+                          >
+                            <img
+                              src={ticketAttachmentDownloadUrl(t.id, firstImage.id)}
+                              alt={firstImage.originalFilename || `Ticket ${t.id} image`}
+                              className="tech-tasks-card-image"
+                              loading="lazy"
+                            />
+                          </a>
+                        ) : null}
                         <div className="tech-tasks-card-user">
                           <div className="tech-tasks-card-avatar" aria-hidden>
                             {displayInitial(reporterName, reporterEmail)}
@@ -291,6 +341,18 @@ export function TechnicianTasksPage() {
                             <span className="tech-tasks-time-value">{formatDateTime(t.updatedAt || t.createdAt)}</span>
                           </div>
                         </div>
+                        {t.status === 'OPEN' || t.status === 'IN_PROGRESS' ? (
+                          <div className="tech-tasks-card-actions">
+                            <button
+                              type="button"
+                              className="btn primary tech-tasks-solve-btn"
+                              disabled={solvingTicketId === t.id}
+                              onClick={() => void markSolved(t)}
+                            >
+                              {solvingTicketId === t.id ? 'Solving…' : 'Solve'}
+                            </button>
+                          </div>
+                        ) : null}
                       </article>
                     </li>
                   )
