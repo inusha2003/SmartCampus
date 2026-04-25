@@ -190,7 +190,7 @@ export function BookingsPage() {
 
       <h1 className="flex items-center gap-2">
         <HiOutlineCalendarDays className="text-cyan-300" />
-        My bookings
+        My  bookings
       </h1>
       <div className="card-grid">
         <div className="card">
