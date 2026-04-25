@@ -198,7 +198,7 @@ export function BookingsPage() {
           <p className="text-3xl font-bold metric-value">{bookings.filter((x) => x.status === 'PENDING').length}</p>
         </div>
         <div className="card">
-          <p className="small flex items-center gap-2"><HiOutlineCheckCircle className="text-emerald-300" /> Approved</p>
+          <p className="small flex items-center gap-2"><HiOutlineCheckCircle className="text-emerald-300" />Approved</p>
           <p className="text-3xl font-bold metric-value">{bookings.filter((x) => x.status === 'APPROVED').length}</p>
         </div>
         <div className="card">
