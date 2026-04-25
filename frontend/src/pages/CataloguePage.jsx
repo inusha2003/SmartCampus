@@ -93,7 +93,7 @@ export function CataloguePage() {
         Facilities &amp; assets
       </h1>
       <p className="small">
-        Browse bookable rooms, labss, and equipments. Sign in to request a booking.
+        Browse bookable rooms, labss, and equipments . Sign in to request a booking.
       </p>
       <div className="stats-grid">
         <div className="card">
