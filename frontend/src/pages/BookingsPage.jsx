@@ -173,7 +173,7 @@ export function BookingsPage() {
             <p className="glass-chip">Booking Workflow</p>
             <h1 className="mt-3 flex items-center gap-2">
               <HiOutlineCalendarDays className="text-cyan-300" />
-              <span className="gradient-title">Plan Your Campus Sessions</span>
+              <span className="gradient-title">Manage Your Reservations</span>
             </h1>
             <p className="small max-w-2xl">
               Submit requests, track approval stages, and manage confirmed slots from one
