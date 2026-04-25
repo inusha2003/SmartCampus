@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { api, ticketAttachmentDownloadUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { HiOutlineTicket, HiOutlineMagnifyingGlass } from 'react-icons/hi2'
+import { AdminTicketsSubnav } from '../components/AdminTicketsSubnav'
 
 const MAX_TEXT = 4000
 
@@ -291,6 +292,7 @@ export function AdminTicketsPage() {
 
   return (
     <div className="admin-tickets-desk">
+      <AdminTicketsSubnav />
       <header className="admin-tickets-toolbar">
         <div className="admin-tickets-toolbar-row">
           <div className="admin-tickets-search-wrap">

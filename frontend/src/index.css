@@ -477,6 +477,30 @@
     @apply mx-auto w-full max-w-[1400px] px-3 pb-10 sm:px-4 lg:px-6;
   }
 
+  .admin-tickets-subnav {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  .admin-tickets-subnav-link {
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition;
+    border-color: rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.55);
+    color: #c6d7ff;
+    text-decoration: none;
+  }
+
+  .admin-tickets-subnav-link:hover {
+    border-color: rgba(120, 165, 255, 0.55);
+    color: #f8fbff;
+  }
+
+  .admin-tickets-subnav-link--active {
+    border-color: rgba(199, 255, 47, 0.55);
+    background: rgba(199, 255, 47, 0.15);
+    color: #ebffbf;
+    box-shadow: inset 0 0 0 1px rgba(199, 255, 47, 0.24);
+  }
+
   .admin-tickets-toolbar {
     @apply mb-5 rounded-2xl border px-4 py-4 sm:px-5;
     border-color: rgba(149, 179, 255, 0.18);
@@ -853,6 +877,82 @@
 
   .admin-tickets-err {
     @apply mt-4;
+  }
+
+  .admin-ticket-tech-page {
+    @apply mx-auto w-full max-w-[1400px] px-3 pb-10 sm:px-4 lg:px-6;
+  }
+
+  .admin-ticket-tech-hero {
+    @apply mb-5 grid gap-4 rounded-2xl border p-4 sm:p-5 lg:grid-cols-[1.2fr_0.8fr];
+    border-color: rgba(149, 179, 255, 0.18);
+    background: rgba(5, 10, 22, 0.75);
+  }
+
+  .admin-ticket-tech-title {
+    @apply mt-3 mb-2 flex items-center gap-2 text-3xl font-bold tracking-tight;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-ticket-tech-add {
+    @apply rounded-xl border p-4;
+    border-color: rgba(159, 181, 248, 0.24);
+    background: rgba(8, 14, 28, 0.65);
+  }
+
+  .admin-ticket-tech-add h2 {
+    @apply mt-0 mb-2 text-base font-semibold;
+  }
+
+  .admin-ticket-tech-add input {
+    @apply mb-2 w-full rounded-xl px-3 py-2 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-add select {
+    @apply mb-2 w-full rounded-xl px-3 py-2 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-controls {
+    @apply mb-4;
+  }
+
+  .admin-ticket-tech-filters {
+    @apply mt-4 grid gap-3 sm:grid-cols-[1fr_auto];
+  }
+
+  .admin-ticket-tech-filters input,
+  .admin-ticket-tech-filters select {
+    @apply w-full rounded-xl px-3 py-2.5 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-list {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .admin-ticket-tech-card {
+    @apply mb-0 flex items-center justify-between gap-3;
+  }
+
+  .admin-ticket-tech-card h3 {
+    @apply m-0 text-base font-semibold;
+    color: #f3f8ff;
+  }
+
+  .admin-ticket-tech-card-stats {
+    @apply flex flex-wrap justify-end gap-2;
   }
 
   .ticket-detail-attachments-visual {
