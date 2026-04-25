@@ -9,7 +9,7 @@ function isImageAttachment(a) {
 import { useAuth } from '../auth/AuthContext'
 
 export function TicketDetailPage() {
-  const MAX_TEXT = 4000
+  const MAX_TEXT = 1000
   const { id } = useParams()
   const { user, loading: authLoading } = useAuth()
   const [ticket, setTicket] = useState(null)
