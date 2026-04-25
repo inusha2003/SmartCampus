@@ -892,6 +892,45 @@
     @apply m-0 block h-32 w-full max-w-[160px] object-cover;
   }
 
+  .admin-tickets-settlement-lead {
+    @apply m-0 mb-3;
+    color: rgba(183, 201, 241, 0.8);
+  }
+
+  .admin-tickets-settlement-grid {
+    @apply grid gap-4 sm:grid-cols-2;
+  }
+
+  .admin-tickets-settlement-card {
+    @apply rounded-xl border p-3;
+    border-color: rgba(159, 181, 248, 0.22);
+    background: rgba(5, 10, 20, 0.55);
+  }
+
+  .admin-tickets-settlement-label {
+    @apply mb-2 block text-[10px] font-bold uppercase tracking-wider;
+    color: #c7ff2f;
+  }
+
+  .admin-tickets-settlement-link {
+    @apply block overflow-hidden rounded-lg;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+  }
+
+  .admin-tickets-settlement-link:hover {
+    border-color: rgba(199, 255, 47, 0.45);
+  }
+
+  .admin-tickets-settlement-img {
+    @apply m-0 block max-h-56 w-full object-contain;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-tickets-settlement-filename {
+    @apply m-0 mt-2 truncate;
+    color: rgba(183, 201, 241, 0.7);
+  }
+
   .admin-tickets-full-link {
     @apply mt-6 border-t pt-4;
     border-color: rgba(149, 179, 255, 0.1);
@@ -1644,5 +1683,314 @@
 
   .tech-panel-cta {
     @apply inline-flex items-center;
+  }
+
+  /* Technician Tasks (/tickets) queue */
+  .tech-tasks-kpi-row {
+    @apply mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .tech-tasks-kpi {
+    @apply flex flex-col rounded-2xl px-4 py-3;
+    border: 1px solid rgba(120, 165, 255, 0.18);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.88) 0%, rgba(7, 13, 29, 0.92) 100%);
+  }
+
+  .tech-tasks-kpi-label {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-kpi-num {
+    @apply text-2xl font-bold leading-tight;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-kpi-hint {
+    @apply mt-0.5 text-xs;
+    color: rgba(154, 176, 223, 0.72);
+  }
+
+  .tech-tasks-kpi--queue .tech-tasks-kpi-num {
+    color: #7cb3ff;
+  }
+
+  .tech-tasks-kpi--priority .tech-tasks-kpi-num {
+    color: #fb923c;
+  }
+
+  .tech-tasks-kpi--cleared .tech-tasks-kpi-num {
+    color: #4ade80;
+  }
+
+  .tech-tasks-kpi--total .tech-tasks-kpi-num {
+    color: #c4b5fd;
+  }
+
+  .tech-tasks-queue-section {
+    @apply mb-2;
+  }
+
+  .tech-tasks-queue-toolbar {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .tech-tasks-queue-title {
+    @apply m-0 text-xl font-bold tracking-tight;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-queue-sub {
+    @apply m-0 mt-1 max-w-2xl;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-queue-filters {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .tech-tasks-filter-label {
+    @apply m-0;
+  }
+
+  .tech-tasks-select {
+    @apply cursor-not-allowed rounded-xl px-3 py-2 text-sm font-medium;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    background: rgba(8, 14, 32, 0.85);
+    color: #dce7ff;
+    min-width: 11rem;
+  }
+
+  .tech-tasks-empty {
+    @apply rounded-xl px-4 py-6 text-center;
+    border: 1px dashed rgba(120, 165, 255, 0.22);
+    color: rgba(154, 176, 223, 0.9);
+  }
+
+  .tech-tasks-category-block {
+    @apply mb-8;
+  }
+
+  .tech-tasks-category-head {
+    @apply mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .tech-tasks-category-title {
+    @apply m-0 text-sm font-bold uppercase tracking-wide;
+    color: rgba(186, 206, 250, 0.95);
+  }
+
+  .tech-tasks-category-badges {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .tech-tasks-mini-badge {
+    @apply rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    color: rgba(186, 206, 250, 0.95);
+    background: rgba(100, 140, 255, 0.1);
+  }
+
+  .tech-tasks-mini-badge--urgent {
+    border-color: rgba(251, 146, 60, 0.45);
+    color: #fdba74;
+    background: rgba(251, 146, 60, 0.1);
+  }
+
+  .tech-tasks-card-list {
+    @apply m-0 flex list-none flex-col gap-3 p-0;
+  }
+
+  .tech-tasks-card {
+    @apply relative overflow-hidden rounded-2xl p-4 sm:p-5;
+    border: 1px solid rgba(120, 165, 255, 0.16);
+    background: linear-gradient(160deg, rgba(10, 18, 38, 0.95) 0%, rgba(6, 11, 24, 0.98) 100%);
+  }
+
+  .tech-tasks-card-accent {
+    @apply absolute bottom-0 left-0 top-0 w-1 rounded-l-2xl;
+    background: linear-gradient(180deg, #7cb3ff, #2dd4bf);
+  }
+
+  .tech-tasks-card-top {
+    @apply mb-3 flex flex-wrap items-start justify-between gap-2 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-card-headline {
+    @apply m-0 min-w-0 flex-1 text-lg font-bold leading-snug;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-card-headline a {
+    @apply no-underline transition;
+    color: #f3f8ff;
+  }
+
+  .tech-tasks-card-headline a:hover {
+    color: #c7ff2f;
+  }
+
+  .tech-tasks-card-user {
+    @apply mb-3 flex items-center gap-3 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-card-avatar {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold;
+    color: #0a1020;
+    background: linear-gradient(135deg, rgba(158, 181, 248, 0.95), rgba(199, 255, 47, 0.75));
+    border: 1px solid rgba(120, 165, 255, 0.35);
+  }
+
+  .tech-tasks-card-user-text {
+    @apply min-w-0 flex-1;
+  }
+
+  .tech-tasks-card-name {
+    @apply m-0 truncate text-sm font-semibold;
+    color: #edf3ff;
+  }
+
+  .tech-tasks-card-email {
+    @apply m-0 truncate text-xs;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-card-when {
+    @apply shrink-0 text-xs font-medium;
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-tasks-card-meta {
+    @apply mb-4 flex flex-wrap items-center gap-2 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-priority {
+    @apply rounded-md px-2 py-0.5 text-xs font-semibold uppercase;
+    border: 1px solid rgba(120, 165, 255, 0.25);
+    color: rgba(186, 206, 250, 0.95);
+    background: rgba(8, 14, 32, 0.65);
+  }
+
+  .tech-tasks-assignee {
+    @apply text-xs;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-tasks-solved {
+    @apply rounded-md px-2 py-0.5 text-xs font-bold uppercase;
+    color: #bbf7d0;
+    border: 1px solid rgba(74, 222, 128, 0.45);
+    background: rgba(74, 222, 128, 0.12);
+  }
+
+  .tech-tasks-rejected {
+    @apply rounded-md px-2 py-0.5 text-xs font-bold uppercase;
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  .tech-tasks-card-times {
+    @apply grid gap-3 border-t border-white/10 pt-3 pl-3 sm:grid-cols-3 sm:pl-4;
+    border-color: rgba(120, 165, 255, 0.12);
+  }
+
+  .tech-tasks-time-label {
+    @apply mb-0.5 block text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-tasks-time-value {
+    @apply text-xs font-medium;
+    color: rgba(220, 231, 255, 0.92);
+  }
+
+  /* Technician settlements (before / after photos) */
+  .tech-settlements-grid {
+    @apply mb-6 grid gap-4 lg:grid-cols-2;
+  }
+
+  .tech-settlements-ticket-row {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .tech-settlements-ticket-label {
+    @apply flex min-w-0 flex-1 flex-col gap-1;
+  }
+
+  .tech-settlements-ticket-label-text {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-settlements-ticket-select {
+    @apply w-full max-w-xl rounded-xl px-3 py-2.5 text-sm font-medium outline-none;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    background: rgba(8, 14, 32, 0.88);
+    color: #edf3ff;
+  }
+
+  .tech-settlements-open-ticket {
+    @apply shrink-0 self-start sm:self-auto;
+  }
+
+  .tech-settlements-slot {
+    @apply rounded-2xl p-5;
+    border: 1px solid rgba(120, 165, 255, 0.18);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.92) 0%, rgba(7, 13, 29, 0.94) 100%);
+  }
+
+  .tech-settlements-slot--disabled {
+    @apply opacity-60;
+  }
+
+  .tech-settlements-slot-head {
+    @apply mb-4 flex gap-3;
+  }
+
+  .tech-settlements-slot-icon {
+    @apply mt-0.5 h-8 w-8 shrink-0;
+    color: #c7ff2f;
+  }
+
+  .tech-settlements-slot-title {
+    @apply m-0 text-lg font-bold;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-settlements-slot-desc {
+    @apply m-0 mt-1;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-settlements-preview {
+    @apply mb-4 flex min-h-[200px] items-center justify-center overflow-hidden rounded-xl;
+    border: 1px dashed rgba(120, 165, 255, 0.25);
+    background: rgba(6, 12, 26, 0.65);
+  }
+
+  .tech-settlements-img {
+    @apply max-h-64 w-full object-contain;
+  }
+
+  .tech-settlements-placeholder {
+    @apply px-4 py-8 text-center;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-settlements-file-btn {
+    @apply inline-flex cursor-pointer;
+  }
+
+  .tech-settlements-filename {
+    @apply mt-2 truncate;
+    color: rgba(154, 176, 223, 0.8);
+  }
+
+  .tech-settlements-meta {
+    @apply mt-2;
+    color: rgba(154, 176, 223, 0.75);
   }
 }

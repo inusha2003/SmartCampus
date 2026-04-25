@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { api, ticketAttachmentDownloadUrl } from '../api/client'
+import { api, ticketAttachmentDownloadUrl, ticketSettlementDownloadUrl } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { HiOutlineTicket, HiOutlineMagnifyingGlass } from 'react-icons/hi2'
 import { AdminTicketsSubnav } from '../components/AdminTicketsSubnav'
@@ -82,6 +82,7 @@ export function AdminTicketsPage() {
   const [panelAssignee, setPanelAssignee] = useState('')
   const [err, setErr] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [settlement, setSettlement] = useState(null)
   const listRef = useRef([])
 
   useEffect(() => {
@@ -96,6 +97,7 @@ export function AdminTicketsPage() {
   const loadDetail = useCallback(async (id) => {
     if (id == null) {
       setDetail(null)
+      setSettlement(null)
       return
     }
     const { data } = await api.get(`/api/tickets/${id}`)
@@ -116,6 +118,12 @@ export function AdminTicketsPage() {
     setDetail(merged)
     setPanelStatus(merged.status || 'OPEN')
     setPanelAssignee(merged.assignedToId != null ? String(merged.assignedToId) : '')
+    try {
+      const { data: st } = await api.get(`/api/tickets/${id}/settlement`)
+      setSettlement(st)
+    } catch {
+      setSettlement({ beforePresent: false, afterPresent: false, ticketId: id })
+    }
   }, [])
 
   useEffect(() => {
@@ -500,6 +508,61 @@ export function AdminTicketsPage() {
                         />
                       </a>
                     ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="admin-tickets-panel-block">
+                <h3 className="admin-tickets-panel-label">Settlements</h3>
+                <p className="small admin-tickets-settlement-lead">
+                  Before and after photos uploaded by the assigned technician for this ticket.
+                </p>
+                {!settlement?.beforePresent && !settlement?.afterPresent ? (
+                  <p className="admin-tickets-photos-empty small">No settlement photos yet.</p>
+                ) : (
+                  <div className="admin-tickets-settlement-grid">
+                    {settlement.beforePresent ? (
+                      <div className="admin-tickets-settlement-card">
+                        <span className="admin-tickets-settlement-label">Before</span>
+                        <a
+                          href={ticketSettlementDownloadUrl(detail.id, 'before')}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="admin-tickets-settlement-link"
+                        >
+                          <img
+                            src={`${ticketSettlementDownloadUrl(detail.id, 'before')}?v=${encodeURIComponent(settlement.updatedAt || '')}`}
+                            alt="Settlement before"
+                            className="admin-tickets-settlement-img"
+                            loading="lazy"
+                          />
+                        </a>
+                        {settlement.beforeFilename ? (
+                          <p className="small admin-tickets-settlement-filename">{settlement.beforeFilename}</p>
+                        ) : null}
+                      </div>
+                    ) : null}
+                    {settlement.afterPresent ? (
+                      <div className="admin-tickets-settlement-card">
+                        <span className="admin-tickets-settlement-label">After</span>
+                        <a
+                          href={ticketSettlementDownloadUrl(detail.id, 'after')}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="admin-tickets-settlement-link"
+                        >
+                          <img
+                            src={`${ticketSettlementDownloadUrl(detail.id, 'after')}?v=${encodeURIComponent(settlement.updatedAt || '')}`}
+                            alt="Settlement after"
+                            className="admin-tickets-settlement-img"
+                            loading="lazy"
+                          />
+                        </a>
+                        {settlement.afterFilename ? (
+                          <p className="small admin-tickets-settlement-filename">{settlement.afterFilename}</p>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
                 )}
               </section>

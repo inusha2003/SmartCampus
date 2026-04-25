@@ -50,6 +50,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketAttachmentRepository ticketAttachmentRepository;
+    private final TicketSettlementRepository ticketSettlementRepository;
     private final TicketCommentRepository ticketCommentRepository;
     private final CampusResourceService campusResourceService;
     private final UserRepository userRepository;
@@ -221,6 +222,7 @@ public class TicketService {
         Ticket t = get(ticketId);
         assertReporterOwnsAndCanMutate(reporter, t);
         removeTicketAttachmentsAndFiles(ticketId);
+        removeTicketSettlement(ticketId);
         ticketCommentRepository.deleteByTicket_Id(ticketId);
         ticketRepository.delete(t);
     }
@@ -232,6 +234,7 @@ public class TicketService {
         }
         Ticket t = get(ticketId);
         removeTicketAttachmentsAndFiles(ticketId);
+        removeTicketSettlement(ticketId);
         ticketCommentRepository.deleteByTicket_Id(ticketId);
         ticketRepository.delete(t);
     }
@@ -256,6 +259,22 @@ public class TicketService {
             }
             ticketAttachmentRepository.delete(a);
         }
+    }
+
+    private void removeTicketSettlement(Long ticketId) {
+        ticketSettlementRepository.findByTicket_Id(ticketId).ifPresent(s -> {
+            try {
+                if (s.getBeforeStoredPath() != null) {
+                    Files.deleteIfExists(Path.of(s.getBeforeStoredPath()));
+                }
+                if (s.getAfterStoredPath() != null) {
+                    Files.deleteIfExists(Path.of(s.getAfterStoredPath()));
+                }
+            } catch (IOException ignored) {
+                /* best-effort */
+            }
+            ticketSettlementRepository.delete(s);
+        });
     }
 
     @Transactional(readOnly = true)
