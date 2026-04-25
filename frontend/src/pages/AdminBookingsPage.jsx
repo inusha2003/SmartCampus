@@ -24,7 +24,7 @@ export function AdminBookingsPage() {
   if (authLoading) {
     return (
       <div className="card" style={{ maxWidth: 480 }}>
-        <p className="small">Checking your session</p>
+        <p className="small">Verifying your access</p>
       </div>
     )
   }
