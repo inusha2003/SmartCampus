@@ -16,6 +16,14 @@ const splitAvailabilityWindows = (value) =>
     .map((part) => part.trim())
     .filter(Boolean)
 
+const sanitizeLocationInput = (value) => value.replace(/[^a-zA-Z0-9\s-]/g, '')
+const sanitizeMinCapacityInput = (value) => {
+  if (!value) return ''
+  const numericValue = Number.parseInt(value, 10)
+  if (Number.isNaN(numericValue)) return ''
+  return String(Math.min(Math.max(numericValue, 0), 1000))
+}
+
 export function CataloguePage() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
@@ -65,7 +73,7 @@ export function CataloguePage() {
           <p className="tag">Smart Campus Experience</p>
           <h1 className="mt-3 flex items-center gap-2">
             <HiOutlineBuildingOffice2 className="text-cyan-300" />
-            Book Spaces With Confidence
+            Book Spaces With Confidencee
           </h1>
           <p className="small max-w-2xl">
             Discover lecture halls, labs, and equipment in one colorful dashboard. Filter quickly,
@@ -117,15 +125,20 @@ export function CataloguePage() {
             </div>
             <div>
               <label>Location contains</label>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Block A" />
+              <input
+                value={location}
+                onChange={(e) => setLocation(sanitizeLocationInput(e.target.value))}
+                placeholder="e.g. Block A"
+              />
             </div>
             <div>
               <label>Min. capacity</label>
               <input
                 type="number"
                 min={0}
+                max={1000}
                 value={minCap}
-                onChange={(e) => setMinCap(e.target.value)}
+                onChange={(e) => setMinCap(sanitizeMinCapacityInput(e.target.value))}
                 placeholder="—"
               />
             </div>
