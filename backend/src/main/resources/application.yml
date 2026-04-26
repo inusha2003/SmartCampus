@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: smart-campus-hub
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:file:./data/smartcampus;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+    username: ${DATABASE_USER:sa}
+    password: ${DATABASE_PASSWORD:}
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+  # Optional: set MAIL_HOST (+ user/pass) so admin "Marked" sends "Your issue has been solved" by email.
+  # If MAIL_HOST is empty, no JavaMailSender is configured and email is skipped (see logs).
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_STARTTLS:true}
+            required: ${MAIL_STARTTLS_REQUIRED:true}
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        name: SCSESSION
+        path: /
+        same-site: lax
+        http-only: true
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  upload-dir: ${UPLOAD_DIR:./uploads}
+  # From address for outbound mail (admin "Marked" → user "Your issue has been solved").
+  mail:
+    from: ${MAIL_FROM:no-reply@smartcampus.local}
+    # Test override recipient (always receives solved emails on admin Marked click).
+    force-to: ${MAIL_FORCE_TO:dsk567d@gmail.com}
+
+spring.security.oauth2.client.registration.google:
+  client-id: ${GOOGLE_CLIENT_ID:replace-me.apps.googleusercontent.com}
+  client-secret: ${GOOGLE_CLIENT_SECRET:replace-me}
+  scope: profile, email
+  # Must match URIs added in Google Cloud Console (use SPA origin when using Vite dev proxy).
+  redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+spring.security.oauth2.client.provider.google:
+  authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+  token-uri: https://oauth2.googleapis.com/token
+  user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+  user-name-attribute: sub
+
+---
+spring:
+  config.activate.on-profile: postgres
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/smartcampus}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USER:smartcampus}
+    password: ${DATABASE_PASSWORD:smartcampus}
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update

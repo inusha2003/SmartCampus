@@ -1,0 +1,2022 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --sc-navy-900: #ecf2ff;
+    --sc-navy-800: #c9d7ff;
+    --sc-navy-700: #9eb5f8;
+    --sc-orange-500: #c7ff2f;
+    --sc-orange-400: #dcff73;
+    --sc-white-100: #121a2d;
+    --sc-white-200: #0d1526;
+    --sc-white-300: #0a0f1d;
+    font-family: "Manrope", "Segoe UI", sans-serif;
+  }
+
+  body {
+    @apply m-0 min-h-screen antialiased;
+    color: var(--sc-navy-900);
+    background-image:
+      radial-gradient(circle at 8% 10%, rgba(199, 255, 47, 0.14), transparent 22%),
+      radial-gradient(circle at 88% 15%, rgba(120, 165, 255, 0.12), transparent 24%),
+      linear-gradient(170deg, #03070f 0%, #061023 45%, #0b1831 100%);
+    background-attachment: fixed;
+  }
+
+  h1 {
+    @apply mb-3 text-3xl font-bold tracking-tight;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  h2 {
+    @apply mt-4 mb-2 text-lg font-semibold;
+    color: #dce7ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .text-cyan-300,
+  .text-violet-300,
+  .text-rose-300,
+  .text-emerald-300 {
+    color: var(--sc-orange-500);
+  }
+}
+
+@layer components {
+  .card {
+    @apply mb-4 rounded-2xl p-5 shadow-lg backdrop-blur-sm transition duration-300;
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.92) 0%, rgba(7, 13, 29, 0.92) 100%);
+    border: 1px solid rgba(149, 179, 255, 0.22);
+    box-shadow: 0 16px 30px rgba(2, 8, 19, 0.46);
+  }
+
+  .card:hover {
+    border-color: rgba(199, 255, 47, 0.58);
+    box-shadow: 0 18px 34px rgba(199, 255, 47, 0.14);
+  }
+
+  .card-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .tag {
+    @apply mr-2 inline-block rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider;
+    border: 1px solid rgba(199, 255, 47, 0.45);
+    background: rgba(199, 255, 47, 0.15);
+    color: #ebffbf;
+  }
+
+  .tag.warn {
+    border-color: rgba(199, 255, 47, 0.62);
+    background: rgba(199, 255, 47, 0.2);
+    color: #f2ffc9;
+  }
+
+  .tag.bad {
+    border-color: rgba(255, 115, 136, 0.5);
+    background: rgba(255, 115, 136, 0.16);
+    color: #ffc2cb;
+  }
+
+  .tag.ok {
+    border-color: rgba(109, 247, 179, 0.52);
+    background: rgba(109, 247, 179, 0.17);
+    color: #cffff2;
+  }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition duration-200;
+  }
+
+  .btn.primary {
+    @apply shadow-md;
+    background: linear-gradient(135deg, var(--sc-orange-500) 0%, var(--sc-orange-400) 100%);
+    color: #07101d;
+    box-shadow: 0 12px 26px rgba(199, 255, 47, 0.28);
+  }
+
+  .btn.primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .btn.ghost {
+    @apply border hover:bg-white/10;
+    border-color: rgba(175, 196, 255, 0.34);
+    background: rgba(8, 15, 31, 0.7);
+    color: #e9f0ff;
+  }
+
+  /* Softer cyan tint — e.g. Admin user card “Edit” vs neutral ghost */
+  .btn.soft {
+    @apply border;
+    border-color: rgba(110, 190, 255, 0.42);
+    background: rgba(45, 100, 180, 0.18);
+    color: #d2ecff;
+  }
+
+  .btn.soft:hover {
+    background: rgba(55, 120, 200, 0.28);
+    border-color: rgba(150, 210, 255, 0.55);
+  }
+
+  .btn.danger {
+    @apply border;
+    border-color: rgba(255, 115, 136, 0.4);
+    background: rgba(255, 115, 136, 0.14);
+    color: #ffb8c5;
+  }
+
+  .btn.danger:hover {
+    background: rgba(255, 115, 136, 0.22);
+  }
+
+  /* Muted rose — slightly softer than default danger (e.g. Admin user “Delete”) */
+  .btn.danger-soft {
+    @apply border;
+    border-color: rgba(230, 150, 165, 0.38);
+    background: rgba(190, 85, 110, 0.12);
+    color: #f0c8d0;
+  }
+
+  .btn.danger-soft:hover {
+    background: rgba(200, 95, 118, 0.2);
+    border-color: rgba(240, 170, 185, 0.48);
+  }
+
+  .field {
+    @apply mb-3;
+  }
+
+  .field label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide;
+    color: #c6d7ff;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    @apply w-full max-w-[440px] rounded-xl px-3 py-2 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.33);
+    background: rgba(9, 17, 35, 0.88);
+    color: #edf3ff;
+    --tw-ring-color: rgba(199, 255, 47, 0.4);
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: rgba(199, 255, 47, 0.72);
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: rgba(187, 206, 250, 0.6);
+  }
+
+  .field textarea {
+    @apply min-h-24 resize-y;
+  }
+
+  .field.field-invalid input,
+  .field.field-invalid select,
+  .field.field-invalid textarea {
+    border-color: rgba(255, 130, 150, 0.75);
+    --tw-ring-color: rgba(255, 130, 150, 0.35);
+  }
+
+  .field-error {
+    @apply mt-1 text-xs font-medium;
+    color: #ffb3bf;
+  }
+
+  /* Tickets page — centered column, grouped form sections */
+  .tickets-page-body {
+    @apply mx-auto w-full max-w-4xl px-3 pb-12 sm:px-4 lg:px-6;
+  }
+
+  .tickets-page-title {
+    @apply mb-4 mt-2 flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tickets-page-stats {
+    @apply mb-6;
+  }
+
+  .ticket-form-card h2 {
+    @apply mb-1 text-xl sm:text-2xl;
+  }
+
+  .ticket-form-lead {
+    @apply mt-2 mb-0 leading-relaxed;
+  }
+
+  .ticket-form {
+    @apply mt-4 flex flex-col gap-0;
+  }
+
+  .ticket-form-error-banner {
+    @apply m-0 rounded-xl border px-4 py-3 text-sm;
+    border-color: rgba(255, 130, 150, 0.4);
+    background: rgba(255, 115, 136, 0.09);
+  }
+
+  .ticket-form-section {
+    @apply mb-5 flex flex-col gap-4 rounded-2xl border px-4 py-5 sm:px-5;
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.42);
+  }
+
+  .ticket-form-section-title {
+    @apply m-0 border-b pb-2.5 text-[11px] font-bold uppercase tracking-[0.14em];
+    color: #9eb5f8;
+    border-color: rgba(149, 179, 255, 0.14);
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-form-grid-2 {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4;
+  }
+
+  .ticket-form-section .field {
+    @apply mb-0;
+  }
+
+  .ticket-form-section .field input,
+  .ticket-form-section .field select,
+  .ticket-form-section .field textarea {
+    @apply max-w-none;
+  }
+
+  .field-hint {
+    @apply mt-1.5 text-xs leading-relaxed;
+    color: rgba(183, 201, 241, 0.9);
+    max-width: 42rem;
+  }
+
+  .ticket-form-field-phone {
+    @apply max-w-xs;
+  }
+
+  .ticket-form-section--photos .ticket-photo-slots {
+    @apply max-w-none sm:max-w-2xl lg:max-w-3xl;
+  }
+
+  .ticket-form-actions {
+    @apply mt-2 flex flex-wrap gap-3 border-t pt-5;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .tickets-queue-heading {
+    @apply mb-4 mt-10 border-b pb-3 text-xl font-semibold tracking-tight sm:text-2xl;
+    color: #e4ecff;
+    font-family: "Sora", "Manrope", sans-serif;
+    border-color: rgba(149, 179, 255, 0.14);
+  }
+
+  .tickets-queue {
+    @apply flex flex-col gap-4;
+  }
+
+  .ticket-queue-card {
+    @apply mb-0;
+  }
+
+  .ticket-photo-slots {
+    @apply grid max-w-[640px] gap-3;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 560px) {
+    .ticket-photo-slots {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ticket-photo-slot {
+    @apply flex min-h-40 flex-col gap-2 rounded-xl p-3;
+    border: 1px solid rgba(159, 181, 248, 0.33);
+    background: rgba(9, 17, 35, 0.55);
+  }
+
+  .ticket-photo-slot-title {
+    @apply text-[10px] font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+  }
+
+  .ticket-photo-slot-body {
+    @apply flex flex-1 flex-col gap-2;
+  }
+
+  .ticket-photo-slot-img {
+    @apply aspect-square w-full rounded-lg;
+    border: 1px solid rgba(159, 181, 248, 0.22);
+    object-fit: cover;
+    box-shadow: 0 8px 18px rgba(2, 8, 19, 0.35);
+  }
+
+  .ticket-photo-slot-add {
+    @apply flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-2 py-6 text-center text-sm font-medium transition;
+    border-color: rgba(159, 181, 248, 0.35);
+    color: #b7c9f1;
+  }
+
+  .ticket-photo-slot-add:hover {
+    border-color: rgba(199, 255, 47, 0.45);
+    color: #e8f0ff;
+    background: rgba(199, 255, 47, 0.06);
+  }
+
+  .ticket-photo-slot-icon {
+    @apply h-8 w-8 opacity-70;
+  }
+
+  .ticket-photo-slot-remove {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-photo-slot-actions {
+    @apply flex flex-col gap-2;
+  }
+
+  .ticket-photo-slot-edit {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-photo-editor-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+    background: rgba(3, 7, 15, 0.75);
+    backdrop-filter: blur(6px);
+  }
+
+  .ticket-photo-editor-dialog {
+    @apply max-h-[92vh] overflow-y-auto rounded-2xl p-5 shadow-2xl;
+    max-width: min(960px, 100%);
+    border: 1px solid rgba(149, 179, 255, 0.28);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.98) 0%, rgba(7, 13, 29, 0.98) 100%);
+  }
+
+  .ticket-photo-editor-title {
+    @apply mt-0 mb-2 text-lg font-semibold;
+    color: #e9f0ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-photo-editor-hint {
+    @apply mb-4;
+  }
+
+  .ticket-photo-editor-toolbar {
+    @apply mb-3 flex flex-wrap items-center gap-2;
+  }
+
+  .ticket-photo-editor-tool-label {
+    @apply text-xs font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+  }
+
+  .ticket-photo-editor-tool.active {
+    border-color: rgba(199, 255, 47, 0.65);
+    background: rgba(199, 255, 47, 0.12);
+    color: #f2ffc9;
+  }
+
+  .ticket-photo-editor-canvas-wrap {
+    @apply flex justify-center overflow-hidden rounded-xl;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: #050a14;
+  }
+
+  .ticket-photo-editor-canvas {
+    @apply block max-h-[60vh] max-w-full cursor-crosshair touch-none;
+  }
+
+  .ticket-photo-editor-actions {
+    @apply mt-4 flex flex-wrap justify-end gap-2;
+  }
+
+  .ticket-queue-card .ticket-queue-head {
+    @apply mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .ticket-queue-tags {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .ticket-queue-title {
+    @apply m-0 text-lg font-semibold tracking-tight;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-queue-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ticket-queue-title a:hover {
+    color: var(--sc-orange-500);
+  }
+
+  .ticket-queue-meta {
+    @apply mb-4 grid gap-3 sm:grid-cols-2;
+  }
+
+  .ticket-queue-meta-row {
+    @apply flex flex-col gap-0.5 rounded-lg px-3 py-2;
+    background: rgba(8, 15, 31, 0.65);
+    border: 1px solid rgba(159, 181, 248, 0.15);
+  }
+
+  .ticket-queue-meta-row dt {
+    @apply text-[10px] font-semibold uppercase tracking-wide;
+    color: #9eb5f8;
+    margin: 0;
+  }
+
+  .ticket-queue-meta-row dd {
+    @apply m-0 text-sm font-medium;
+    color: #e9f0ff;
+  }
+
+  .ticket-queue-meta-row-wide {
+    grid-column: 1 / -1;
+  }
+
+  .ticket-queue-block {
+    @apply mb-4;
+  }
+
+  .ticket-queue-block-title {
+    @apply m-0 mb-2 text-xs font-semibold uppercase tracking-wide;
+    color: #c6d7ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .ticket-queue-description {
+    @apply m-0 whitespace-pre-wrap rounded-xl px-3 py-2.5 text-sm leading-relaxed;
+    color: #b7c9f1;
+    border: 1px solid rgba(159, 181, 248, 0.2);
+    background: rgba(5, 10, 20, 0.55);
+  }
+
+  .ticket-queue-photo-grid {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .ticket-queue-photo-link {
+    @apply block overflow-hidden rounded-xl transition;
+    border: 1px solid rgba(159, 181, 248, 0.35);
+    box-shadow: 0 8px 20px rgba(2, 8, 19, 0.35);
+    max-width: 200px;
+  }
+
+  .ticket-queue-photo-link:hover {
+    border-color: rgba(199, 255, 47, 0.55);
+  }
+
+  .ticket-queue-thumb {
+    @apply m-0 block h-36 w-full max-w-[200px] object-cover;
+    vertical-align: middle;
+  }
+
+  .ticket-queue-file-list {
+    @apply m-0 list-inside list-disc space-y-1 pl-1;
+    color: #b7c9f1;
+  }
+
+  .ticket-queue-file-list a {
+    color: var(--sc-orange-500);
+  }
+
+  .ticket-queue-footer {
+    @apply mt-2 flex flex-wrap gap-2 border-t pt-3;
+    border-color: rgba(159, 181, 248, 0.15);
+  }
+
+  /* Admin ticket desk (/admin/tickets) — queue + detail split */
+  .admin-tickets-desk {
+    @apply mx-auto w-full max-w-[1400px] px-3 pb-10 sm:px-4 lg:px-6;
+  }
+
+  .admin-tickets-subnav {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  .admin-tickets-subnav-link {
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition;
+    border-color: rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.55);
+    color: #c6d7ff;
+    text-decoration: none;
+  }
+
+  .admin-tickets-subnav-link:hover {
+    border-color: rgba(120, 165, 255, 0.55);
+    color: #f8fbff;
+  }
+
+  .admin-tickets-subnav-link--active {
+    border-color: rgba(199, 255, 47, 0.55);
+    background: rgba(199, 255, 47, 0.15);
+    color: #ebffbf;
+    box-shadow: inset 0 0 0 1px rgba(199, 255, 47, 0.24);
+  }
+
+  .admin-tickets-toolbar {
+    @apply mb-5 rounded-2xl border px-4 py-4 sm:px-5;
+    border-color: rgba(149, 179, 255, 0.18);
+    background: rgba(5, 10, 22, 0.75);
+  }
+
+  .admin-tickets-toolbar-row {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+  }
+
+  .admin-tickets-search-wrap {
+    @apply relative flex-1;
+  }
+
+  .admin-tickets-search-icon {
+    @apply pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2;
+    color: rgba(158, 184, 255, 0.55);
+  }
+
+  .admin-tickets-search {
+    @apply w-full rounded-xl py-2.5 pl-10 pr-3 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-tickets-search::placeholder {
+    color: rgba(187, 206, 250, 0.45);
+  }
+
+  .admin-tickets-select {
+    @apply rounded-xl px-3 py-2.5 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-tickets-select--status {
+    @apply w-full shrink-0 sm:w-44;
+  }
+
+  .admin-tickets-select--grow {
+    @apply min-w-0 flex-1;
+  }
+
+  .admin-tickets-quick {
+    @apply mt-4 flex flex-wrap items-center gap-2;
+  }
+
+  .admin-tickets-quick-label {
+    @apply mr-1 text-[10px] font-bold uppercase tracking-widest;
+    color: rgba(158, 184, 255, 0.65);
+  }
+
+  .admin-tickets-chip {
+    @apply rounded-full border px-3 py-1.5 text-xs font-semibold transition;
+    border-color: rgba(159, 181, 248, 0.25);
+    background: rgba(8, 14, 28, 0.5);
+    color: #c6d7ff;
+  }
+
+  .admin-tickets-chip:hover {
+    border-color: rgba(120, 165, 255, 0.45);
+    color: #fff;
+  }
+
+  .admin-tickets-chip--active {
+    border-color: rgba(96, 165, 250, 0.85);
+    background: rgba(59, 130, 246, 0.18);
+    color: #dbeafe;
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.35);
+  }
+
+  .admin-tickets-split {
+    @apply grid min-h-[520px] gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6;
+  }
+
+  .admin-tickets-queue {
+    @apply flex max-h-[calc(100vh-220px)] flex-col rounded-2xl border lg:max-h-[calc(100vh-180px)];
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.55);
+  }
+
+  .admin-tickets-queue-head {
+    @apply flex shrink-0 items-start justify-between border-b px-4 py-3;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .admin-tickets-queue-title {
+    @apply m-0 text-xs font-bold uppercase tracking-[0.12em];
+    color: #9eb5f8;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-queue-sub {
+    @apply m-0 mt-0.5 text-xs;
+    color: rgba(183, 201, 241, 0.75);
+  }
+
+  .admin-tickets-queue-count {
+    @apply rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+    border-color: rgba(159, 181, 248, 0.3);
+    color: #b7c9f1;
+  }
+
+  .admin-tickets-queue-list {
+    @apply flex flex-1 flex-col gap-2 overflow-y-auto p-3;
+  }
+
+  .admin-tickets-empty {
+    @apply m-0 px-2 py-6 text-center;
+  }
+
+  .admin-tickets-queue-card {
+    @apply w-full cursor-pointer rounded-xl border p-3 text-left transition;
+    border-color: rgba(159, 181, 248, 0.18);
+    background: rgba(8, 14, 28, 0.65);
+    border-left-width: 4px;
+    border-left-style: solid;
+  }
+
+  .admin-tickets-queue-card:hover {
+    border-color: rgba(159, 181, 248, 0.35);
+    background: rgba(12, 20, 40, 0.85);
+  }
+
+  .admin-tickets-queue-card--active {
+    border-color: rgba(96, 165, 250, 0.55);
+    background: rgba(30, 58, 138, 0.28);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25);
+  }
+
+  .admin-tickets-queue-card--urgent {
+    border-left-color: #f87171;
+  }
+
+  .admin-tickets-queue-card--high {
+    border-left-color: #fb923c;
+  }
+
+  .admin-tickets-queue-card--default {
+    border-left-color: #60a5fa;
+  }
+
+  .admin-tickets-queue-card-top {
+    @apply flex items-start justify-between gap-2;
+  }
+
+  .admin-tickets-queue-card-title {
+    @apply line-clamp-2 text-sm font-semibold leading-snug;
+    color: #f3f8ff;
+  }
+
+  .admin-tickets-queue-inc {
+    @apply m-0 mt-1 font-mono text-[11px] font-medium;
+    color: rgba(158, 184, 255, 0.85);
+  }
+
+  .admin-tickets-queue-meta {
+    @apply m-0 mt-1 text-xs;
+    color: rgba(183, 201, 241, 0.85);
+  }
+
+  .admin-tickets-queue-user {
+    @apply mt-3 flex items-center gap-2.5;
+  }
+
+  .admin-tickets-queue-avatar {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold;
+    background: rgba(96, 165, 250, 0.25);
+    color: #e0f2fe;
+    border: 1px solid rgba(96, 165, 250, 0.4);
+  }
+
+  .admin-tickets-queue-name {
+    @apply m-0 text-xs font-semibold;
+    color: #e9f0ff;
+  }
+
+  .admin-tickets-queue-email {
+    @apply m-0 max-w-[220px] truncate text-[11px];
+    color: rgba(183, 201, 241, 0.8);
+  }
+
+  .admin-tickets-queue-foot {
+    @apply mt-2 flex flex-wrap gap-2 border-t pt-2 text-[10px] font-semibold uppercase tracking-wide;
+    border-color: rgba(149, 179, 255, 0.1);
+    color: rgba(158, 184, 255, 0.75);
+  }
+
+  .admin-tickets-status-badge {
+    @apply shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+  }
+
+  .admin-tickets-status-badge--open {
+    background: rgba(52, 211, 153, 0.2);
+    color: #a7f3d0;
+    border: 1px solid rgba(52, 211, 153, 0.45);
+  }
+
+  .admin-tickets-status-badge--in_progress {
+    background: rgba(96, 165, 250, 0.22);
+    color: #bfdbfe;
+    border: 1px solid rgba(96, 165, 250, 0.45);
+  }
+
+  .admin-tickets-status-badge--resolved,
+  .admin-tickets-status-badge--closed {
+    background: rgba(148, 163, 184, 0.2);
+    color: #e2e8f0;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .admin-tickets-status-badge--rejected {
+    background: rgba(248, 113, 113, 0.18);
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.45);
+  }
+
+  .admin-tickets-detail {
+    @apply flex max-h-[calc(100vh-220px)] flex-col overflow-y-auto rounded-2xl border p-4 sm:p-5 lg:max-h-[calc(100vh-180px)];
+    border-color: rgba(149, 179, 255, 0.16);
+    background: rgba(4, 10, 24, 0.65);
+  }
+
+  .admin-tickets-detail-empty {
+    @apply flex flex-1 flex-col items-center justify-center gap-3 py-16 text-center;
+  }
+
+  .admin-tickets-detail-empty-icon {
+    @apply h-14 w-14 opacity-40;
+    color: #9eb5f8;
+  }
+
+  .admin-tickets-detail-head {
+    @apply flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between;
+    border-color: rgba(149, 179, 255, 0.12);
+  }
+
+  .admin-tickets-detail-badges {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .admin-tickets-pill {
+    @apply rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+  }
+
+  .admin-tickets-pill--muted {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .admin-tickets-detail-actions {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .admin-tickets-btn-compact {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .admin-tickets-detail-title {
+    @apply mb-1 mt-4 text-2xl font-bold leading-tight tracking-tight;
+    color: #f8fafc;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-detail-id {
+    @apply m-0 font-mono text-sm;
+    color: rgba(158, 184, 255, 0.9);
+  }
+
+  .admin-tickets-detail-times {
+    @apply mt-5 grid gap-3 sm:grid-cols-2;
+  }
+
+  .admin-tickets-time-box {
+    @apply rounded-xl border px-3 py-2.5;
+    border-color: rgba(159, 181, 248, 0.2);
+    background: rgba(6, 12, 26, 0.8);
+  }
+
+  .admin-tickets-time-label {
+    @apply mb-1 block text-[10px] font-bold uppercase tracking-widest;
+    color: #9eb5f8;
+  }
+
+  .admin-tickets-time-value {
+    @apply text-sm font-medium;
+    color: #e9f0ff;
+  }
+
+  .admin-tickets-panel-block {
+    @apply mt-5 border-t pt-5;
+    border-color: rgba(149, 179, 255, 0.1);
+  }
+
+  .admin-tickets-panel-label {
+    @apply m-0 mb-2 text-[10px] font-bold uppercase tracking-[0.14em];
+    color: #9eb5f8;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-tickets-assign-row {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-stretch;
+  }
+
+  .admin-tickets-tech-solved-note {
+    @apply mb-3 rounded-xl border px-3 py-2;
+    border-color: rgba(74, 222, 128, 0.35);
+    background: rgba(16, 185, 129, 0.08);
+    color: #b7f7d0;
+  }
+
+  .admin-tickets-assign-btn {
+    @apply shrink-0 sm:px-5;
+  }
+
+  .admin-tickets-reject {
+    @apply w-full sm:w-auto;
+  }
+
+  .admin-tickets-textarea {
+    @apply min-h-[88px] w-full resize-y rounded-xl px-3 py-2 text-sm outline-none focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 250, 0.35);
+  }
+
+  .admin-tickets-description {
+    @apply whitespace-pre-wrap rounded-xl border px-3 py-3 text-sm leading-relaxed;
+    border-color: rgba(159, 181, 248, 0.2);
+    background: rgba(5, 10, 20, 0.55);
+    color: #b7c9f1;
+  }
+
+  .admin-tickets-photos-head {
+    @apply mb-2 flex items-center justify-between gap-2;
+  }
+
+  .admin-tickets-file-count {
+    @apply text-xs font-medium;
+    color: rgba(183, 201, 241, 0.75);
+  }
+
+  .admin-tickets-photos-empty {
+    @apply m-0 rounded-xl border border-dashed px-4 py-8 text-center;
+    border-color: rgba(159, 181, 248, 0.22);
+    color: rgba(183, 201, 241, 0.65);
+  }
+
+  .admin-tickets-photo-grid {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .admin-tickets-photo-link {
+    @apply block overflow-hidden rounded-xl transition;
+    border: 1px solid rgba(159, 181, 248, 0.3);
+    max-width: 160px;
+  }
+
+  .admin-tickets-photo-link:hover {
+    border-color: rgba(199, 255, 47, 0.5);
+  }
+
+  .admin-tickets-photo-thumb {
+    @apply m-0 block h-32 w-full max-w-[160px] object-cover;
+  }
+
+  .admin-tickets-settlement-lead {
+    @apply m-0 mb-3;
+    color: rgba(183, 201, 241, 0.8);
+  }
+
+  .admin-tickets-settlement-grid {
+    @apply grid gap-4 sm:grid-cols-2;
+  }
+
+  .admin-tickets-settlement-card {
+    @apply rounded-xl border p-3;
+    border-color: rgba(159, 181, 248, 0.22);
+    background: rgba(5, 10, 20, 0.55);
+  }
+
+  .admin-tickets-settlement-label {
+    @apply mb-2 block text-[10px] font-bold uppercase tracking-wider;
+    color: #c7ff2f;
+  }
+
+  .admin-tickets-settlement-link {
+    @apply block overflow-hidden rounded-lg;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+  }
+
+  .admin-tickets-settlement-link:hover {
+    border-color: rgba(199, 255, 47, 0.45);
+  }
+
+  .admin-tickets-settlement-img {
+    @apply m-0 block max-h-56 w-full object-contain;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-tickets-settlement-filename {
+    @apply m-0 mt-2 truncate;
+    color: rgba(183, 201, 241, 0.7);
+  }
+
+  .admin-tickets-full-link {
+    @apply mt-6 border-t pt-4;
+    border-color: rgba(149, 179, 255, 0.1);
+  }
+
+  .admin-tickets-full-link a {
+    color: var(--sc-orange-500);
+  }
+
+  .admin-tickets-err {
+    @apply mt-4;
+  }
+
+  .admin-ticket-tech-page {
+    @apply mx-auto w-full max-w-[1400px] px-3 pb-10 sm:px-4 lg:px-6;
+  }
+
+  .admin-ticket-tech-hero {
+    @apply mb-5 grid gap-4 rounded-2xl border p-4 sm:p-5 lg:grid-cols-[1.2fr_0.8fr];
+    border-color: rgba(149, 179, 255, 0.18);
+    background: rgba(5, 10, 22, 0.75);
+  }
+
+  .admin-ticket-tech-title {
+    @apply mt-3 mb-2 flex items-center gap-2 text-3xl font-bold tracking-tight;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .admin-ticket-tech-add {
+    @apply rounded-xl border p-4;
+    border-color: rgba(159, 181, 248, 0.24);
+    background: rgba(8, 14, 28, 0.65);
+  }
+
+  .admin-ticket-tech-add h2 {
+    @apply mt-0 mb-2 text-base font-semibold;
+  }
+
+  .admin-ticket-tech-add input {
+    @apply mb-2 w-full rounded-xl px-3 py-2 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-add select {
+    @apply mb-2 w-full rounded-xl px-3 py-2 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-controls {
+    @apply mb-4;
+  }
+
+  .admin-ticket-tech-filters {
+    @apply mt-4 grid gap-3 sm:grid-cols-[1fr_auto];
+  }
+
+  .admin-ticket-tech-filters input,
+  .admin-ticket-tech-filters select {
+    @apply w-full rounded-xl px-3 py-2.5 text-sm outline-none transition focus:ring-2;
+    border: 1px solid rgba(159, 181, 248, 0.28);
+    background: rgba(8, 14, 28, 0.95);
+    color: #edf3ff;
+    --tw-ring-color: rgba(120, 165, 255, 0.35);
+  }
+
+  .admin-ticket-tech-list {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .admin-ticket-tech-card {
+    @apply mb-0 flex items-center justify-between gap-3;
+  }
+
+  .admin-ticket-tech-card h3 {
+    @apply m-0 text-base font-semibold;
+    color: #f3f8ff;
+  }
+
+  .admin-ticket-tech-card-stats {
+    @apply flex flex-wrap justify-end gap-2;
+  }
+
+  .ticket-detail-attachments-visual {
+    @apply flex flex-wrap gap-4;
+  }
+
+  .ticket-detail-attachment-cell {
+    @apply flex max-w-[220px] flex-col gap-2;
+  }
+
+  .ticket-detail-attachment-name {
+    @apply m-0 line-clamp-2 break-all;
+    color: #b7c9f1;
+  }
+
+  .ticket-detail-attachment-dl {
+    @apply w-full justify-center py-1.5 text-xs;
+  }
+
+  .ticket-detail-title-text {
+    @apply mb-2 mt-0 text-base font-semibold leading-snug;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .row-actions {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+
+  .error {
+    @apply text-sm font-medium;
+    color: #ffb3bf;
+  }
+
+  .small {
+    @apply text-sm;
+    color: #b7c9f1;
+  }
+
+  .stack {
+    @apply flex flex-col gap-2;
+  }
+
+  .hero-card {
+    @apply relative overflow-hidden rounded-3xl p-6 shadow-xl backdrop-blur-sm md:p-8;
+    border: 1px solid rgba(152, 182, 255, 0.28);
+    background: linear-gradient(145deg, rgba(11, 21, 43, 0.96) 0%, rgba(6, 12, 28, 0.95) 100%);
+    box-shadow: 0 18px 36px rgba(2, 8, 18, 0.54);
+  }
+
+  .hero-card::before {
+    content: "";
+    @apply pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full blur-3xl;
+    background: rgba(199, 255, 47, 0.18);
+  }
+
+  .hero-card::after {
+    content: "";
+    @apply pointer-events-none absolute -bottom-18 -left-14 h-52 w-52 rounded-full blur-3xl;
+    background: rgba(126, 164, 250, 0.18);
+  }
+
+  .hero-card.rainbow::before {
+    background: rgba(199, 255, 47, 0.2);
+  }
+
+  .hero-card.rainbow::after {
+    background: rgba(126, 164, 250, 0.2);
+  }
+
+  .hero-grid {
+    @apply grid items-center gap-6 md:grid-cols-[1.2fr_1fr];
+  }
+
+  .hero-cover {
+    @apply bg-cover bg-center bg-no-repeat;
+    min-height: 350px;
+  }
+
+  .hero-cover::before,
+  .hero-cover::after {
+    display: none;
+  }
+
+  .hero-cover-content {
+    @apply relative z-10 max-w-2xl;
+    padding: 0.5rem 0;
+  }
+
+  .hero-cover .tag {
+    border-color: rgba(199, 255, 47, 0.62);
+    background: rgba(199, 255, 47, 0.2);
+    color: #f1ffcb;
+  }
+
+  .hero-cover h1 {
+    color: #ffffff;
+  }
+
+  .hero-cover .small {
+    color: rgba(231, 241, 255, 0.92);
+  }
+
+  @media (max-width: 768px) {
+    .hero-cover {
+      min-height: 300px;
+      background-position: center;
+    }
+  }
+
+  .feature-image {
+    @apply h-44 w-full rounded-2xl object-cover shadow-md md:h-48;
+    border: 1px solid rgba(165, 191, 255, 0.22);
+    box-shadow: 0 12px 28px rgba(3, 10, 23, 0.46);
+  }
+
+  .stats-grid {
+    @apply grid gap-4 md:grid-cols-3;
+  }
+
+  .stats-grid .card {
+    border-top: 4px solid rgba(199, 255, 47, 0.78);
+  }
+
+  .metric-value {
+    color: #f2f7ff;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .gradient-title {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, #f4f9ff 0%, #b3c8ff 50%, var(--sc-orange-500) 100%);
+  }
+
+  .glass-chip {
+    @apply inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold backdrop-blur;
+    border-color: rgba(199, 255, 47, 0.46);
+    background: rgba(199, 255, 47, 0.14);
+    color: #efffcd;
+  }
+
+  .auth-shell {
+    @apply mx-auto w-full;
+    max-width: 500px;
+  }
+
+  .auth-shell.split {
+    max-width: 1080px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Login (dev): main login + dev login side by side; sign-up card full width below */
+  .auth-shell.login-dev-layout {
+    max-width: 1080px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .auth-login-dev-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .auth-login-dev-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .auth-shell.login-dev-layout .auth-card.secondary {
+    margin-top: 1.5rem;
+    max-width: 640px;
+    width: 100%;
+    justify-self: center;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.login-dev-layout .auth-card.secondary {
+      margin-top: 2.25rem;
+    }
+  }
+
+  .auth-card {
+    @apply rounded-2xl p-6 shadow-lg;
+    background: rgba(9, 17, 34, 0.94);
+    border: 1px solid rgba(149, 179, 255, 0.24);
+  }
+
+  .auth-card.secondary {
+    background: rgba(10, 19, 37, 0.86);
+  }
+
+  /* Login split (prod: login | signup): nudge sign-up card lower */
+  .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 900px) {
+    .auth-shell.split:not(.login-dev-layout) .auth-card.secondary {
+      margin-top: 3.5rem;
+    }
+  }
+
+  .auth-header {
+    @apply mb-5;
+  }
+
+  .auth-brand {
+    @apply text-sm font-semibold;
+    color: #9fb9f5;
+  }
+
+  .auth-title {
+    @apply mb-2 mt-1 text-4xl;
+    line-height: 1.1;
+  }
+
+  .auth-social-grid {
+    @apply grid justify-items-center gap-3;
+  }
+
+  .auth-social-btn {
+    @apply inline-flex w-full max-w-64 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition;
+    border: 1px solid rgba(170, 191, 245, 0.35);
+    background: rgba(14, 24, 45, 0.82);
+    color: #eaf1ff;
+  }
+
+  .auth-social-btn:hover {
+    border-color: rgba(199, 255, 47, 0.55);
+    background: rgba(16, 29, 54, 0.9);
+  }
+
+  .auth-social-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .auth-divider {
+    @apply my-4 flex items-center text-xs;
+    color: #9ab0df;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid rgba(146, 174, 247, 0.27);
+  }
+
+  .auth-divider span {
+    @apply px-3;
+  }
+
+  .auth-input {
+    @apply mb-3 flex items-center gap-2 rounded-xl px-3 py-2;
+    border: 1px solid rgba(159, 181, 248, 0.33);
+    background: rgba(10, 18, 36, 0.88);
+    color: #b9cef8;
+  }
+
+  .auth-input input {
+    @apply w-full bg-transparent text-sm outline-none;
+    color: #edf3ff;
+  }
+
+  .auth-input input::placeholder {
+    color: rgba(187, 206, 250, 0.62);
+  }
+
+  .auth-meta-row {
+    @apply mb-3 mt-1 flex items-center justify-between gap-2;
+  }
+
+  .auth-checkbox {
+    @apply inline-flex items-center gap-2 text-sm;
+    color: #bdd0f6;
+  }
+
+  .auth-link-btn {
+    @apply cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold;
+    color: #8cb5ff;
+  }
+
+  .auth-submit {
+    @apply w-full justify-center;
+  }
+
+  /* Technician TechPanel dashboard */
+  .tech-panel-root {
+    @apply flex flex-col gap-0 rounded-2xl border shadow-xl md:flex-row;
+    margin: 0 -0.5rem;
+    width: calc(100% + 1rem);
+    max-width: none;
+    overflow: hidden;
+    border-color: rgba(120, 165, 255, 0.2);
+    background: linear-gradient(145deg, rgba(6, 12, 28, 0.98) 0%, rgba(4, 8, 20, 0.99) 100%);
+  }
+
+  @media (min-width: 768px) {
+    .tech-panel-root {
+      margin: 0 -1rem;
+      width: calc(100% + 2rem);
+    }
+  }
+
+  .tech-panel-sidebar {
+    @apply flex shrink-0 flex-col gap-4 py-5 pl-4 pr-4 md:gap-6 md:py-6 md:pr-3;
+    width: 100%;
+    border-bottom: 1px solid rgba(120, 165, 255, 0.14);
+    border-right: none;
+    background: linear-gradient(180deg, rgba(10, 18, 40, 0.95) 0%, rgba(6, 11, 26, 0.98) 100%);
+  }
+
+  @media (min-width: 768px) {
+    .tech-panel-sidebar {
+      width: 220px;
+      border-bottom: none;
+      border-right: 1px solid rgba(120, 165, 255, 0.14);
+    }
+  }
+
+  .tech-panel-brand {
+    @apply flex items-center gap-3 px-2;
+  }
+
+  .tech-panel-brand-icon {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl text-xl;
+    color: #c7ff2f;
+    background: rgba(199, 255, 47, 0.12);
+    border: 1px solid rgba(199, 255, 47, 0.28);
+  }
+
+  .tech-panel-brand-title {
+    @apply text-base font-bold tracking-tight;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-panel-brand-sub {
+    @apply text-[10px] font-semibold uppercase tracking-widest;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-panel-nav {
+    @apply flex flex-col gap-1;
+  }
+
+  .tech-panel-nav-item {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium no-underline transition;
+    color: rgba(186, 206, 250, 0.92);
+  }
+
+  .tech-panel-nav-item:hover {
+    background: rgba(120, 165, 255, 0.08);
+    color: #e8f0ff;
+  }
+
+  .tech-panel-nav-item.is-active {
+    background: rgba(100, 140, 255, 0.18);
+    color: #f3f8ff;
+    border: 1px solid rgba(120, 165, 255, 0.25);
+  }
+
+  .tech-panel-nav-ico {
+    @apply h-5 w-5 shrink-0 opacity-90;
+  }
+
+  .tech-panel-main {
+    @apply min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-6;
+  }
+
+  .tech-panel-header {
+    @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .tech-panel-date {
+    @apply mb-1 text-xs font-semibold uppercase tracking-widest;
+    color: rgba(154, 176, 223, 0.9);
+  }
+
+  .tech-panel-heading {
+    @apply mb-1 text-2xl font-bold tracking-tight sm:text-3xl;
+    color: #f3f8ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-panel-sub {
+    @apply m-0 max-w-xl text-sm;
+    color: rgba(186, 206, 250, 0.92);
+  }
+
+  .tech-panel-sub-dot {
+    color: rgba(154, 176, 223, 0.55);
+  }
+
+  .tech-panel-live {
+    @apply mt-2 flex items-center gap-2 text-xs;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-panel-live-dot {
+    @apply inline-block h-2 w-2 rounded-full;
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+  }
+
+  .tech-panel-header-right {
+    @apply flex items-center gap-3;
+  }
+
+  .tech-panel-kpi-mini {
+    @apply rounded-xl px-3 py-2 text-right;
+    border: 1px solid rgba(120, 165, 255, 0.2);
+    background: rgba(8, 14, 32, 0.85);
+  }
+
+  .tech-panel-kpi-mini-label {
+    @apply block text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-panel-kpi-mini-value {
+    @apply text-lg font-bold;
+    color: #c7ff2f;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-panel-icon-btn {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl text-lg no-underline transition;
+    color: rgba(186, 206, 250, 0.95);
+    border: 1px solid rgba(120, 165, 255, 0.22);
+    background: rgba(10, 18, 36, 0.75);
+  }
+
+  .tech-panel-icon-btn:hover {
+    border-color: rgba(199, 255, 47, 0.35);
+    color: #c7ff2f;
+  }
+
+  .tech-panel-avatar {
+    @apply flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold;
+    color: #0a1020;
+    background: linear-gradient(135deg, #9eb5f8, #c7ff2f);
+    border: 2px solid rgba(120, 165, 255, 0.35);
+  }
+
+  .tech-panel-banner {
+    @apply mb-4 rounded-xl px-4 py-2;
+    border: 1px solid rgba(120, 165, 255, 0.2);
+    background: rgba(8, 14, 32, 0.6);
+    color: rgba(186, 206, 250, 0.95);
+  }
+
+  .tech-panel-banner-error {
+    border-color: rgba(248, 113, 113, 0.35);
+    color: #fecaca;
+  }
+
+  .tech-panel-link-btn {
+    @apply ml-1 cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold underline;
+    color: #c7ff2f;
+  }
+
+  .tech-panel-top-grid {
+    @apply mb-5 grid gap-4 lg:grid-cols-[1fr_280px];
+  }
+
+  .tech-panel-card {
+    @apply rounded-2xl p-5;
+    border: 1px solid rgba(120, 165, 255, 0.18);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.92) 0%, rgba(7, 13, 29, 0.94) 100%);
+  }
+
+  .tech-panel-card-wide {
+    @apply lg:col-span-1;
+  }
+
+  .tech-panel-card-tags {
+    @apply mb-3 flex flex-wrap gap-2;
+  }
+
+  .tech-panel-pill {
+    @apply rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+    color: #c7ff2f;
+    border: 1px solid rgba(199, 255, 47, 0.35);
+    background: rgba(199, 255, 47, 0.08);
+  }
+
+  .tech-panel-pill-muted {
+    color: rgba(154, 176, 223, 0.95);
+    border-color: rgba(120, 165, 255, 0.28);
+    background: rgba(100, 140, 255, 0.08);
+  }
+
+  .tech-panel-card-title {
+    @apply m-0 mb-1 text-lg font-bold;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-panel-card-desc {
+    @apply m-0 mb-4 text-sm;
+    color: rgba(154, 176, 223, 0.9);
+  }
+
+  .tech-panel-donut-row {
+    @apply flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .tech-panel-donut-wrap {
+    @apply flex shrink-0 items-center justify-center;
+  }
+
+  .tech-panel-donut {
+    @apply relative flex items-center justify-center rounded-full;
+    width: 200px;
+    height: 200px;
+  }
+
+  .tech-panel-donut-hole {
+    @apply absolute rounded-full;
+    width: 112px;
+    height: 112px;
+    background: linear-gradient(160deg, #0a1228 0%, #060d1c 100%);
+    border: 1px solid rgba(120, 165, 255, 0.15);
+  }
+
+  .tech-panel-donut-empty {
+    @apply flex h-[200px] w-[200px] items-center justify-center rounded-full text-center;
+    border: 1px dashed rgba(120, 165, 255, 0.25);
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-panel-legend {
+    @apply m-0 flex list-none flex-col gap-3 p-0 text-sm;
+    color: rgba(186, 206, 250, 0.95);
+  }
+
+  .tech-panel-legend li {
+    @apply flex items-center gap-3;
+  }
+
+  .tech-panel-legend-dot {
+    @apply h-3 w-3 shrink-0 rounded-full;
+  }
+
+  .tech-panel-kpi-stack {
+    @apply flex flex-col gap-3;
+  }
+
+  .tech-panel-kpi {
+    @apply flex flex-col rounded-2xl px-4 py-3;
+    border: 1px solid rgba(120, 165, 255, 0.14);
+    background: rgba(6, 12, 26, 0.75);
+  }
+
+  .tech-panel-kpi-label {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-panel-kpi-num {
+    @apply text-2xl font-bold leading-tight;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-panel-kpi-hint {
+    @apply mt-0.5 text-xs;
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-panel-kpi-blue .tech-panel-kpi-num {
+    color: #7cb3ff;
+  }
+
+  .tech-panel-kpi-violet .tech-panel-kpi-num {
+    color: #c4b5fd;
+  }
+
+  .tech-panel-kpi-green .tech-panel-kpi-num {
+    color: #4ade80;
+  }
+
+  .tech-panel-kpi-orange .tech-panel-kpi-num {
+    color: #fb923c;
+  }
+
+  .tech-panel-bottom-grid {
+    @apply mb-6 grid gap-4 lg:grid-cols-2;
+  }
+
+  .tech-panel-muted {
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-panel-bar-list {
+    @apply m-0 flex list-none flex-col gap-3 p-0;
+  }
+
+  .tech-panel-bar-head {
+    @apply mb-1 flex justify-between gap-2 text-sm;
+    color: rgba(186, 206, 250, 0.95);
+  }
+
+  .tech-panel-bar-name {
+    @apply min-w-0 truncate font-medium;
+  }
+
+  .tech-panel-bar-count {
+    @apply shrink-0 font-bold tabular-nums;
+    color: #c7ff2f;
+  }
+
+  .tech-panel-bar-track {
+    @apply h-2 overflow-hidden rounded-full;
+    background: rgba(120, 165, 255, 0.1);
+  }
+
+  .tech-panel-bar-fill {
+    @apply h-full rounded-full transition-all;
+    background: linear-gradient(90deg, #2dd4bf, #c7ff2f);
+    max-width: 100%;
+  }
+
+  .tech-panel-pulse {
+    @apply flex h-40 items-end justify-between gap-1 pt-2;
+  }
+
+  .tech-panel-pulse-col {
+    @apply flex flex-1 flex-col items-center justify-end gap-2;
+    min-width: 0;
+  }
+
+  .tech-panel-pulse-bar {
+    @apply w-full max-w-[36px] rounded-t-md;
+    min-height: 8px;
+    background: linear-gradient(180deg, #2dd4bf, rgba(100, 140, 255, 0.45));
+    border: 1px solid rgba(120, 165, 255, 0.25);
+  }
+
+  .tech-panel-pulse-label {
+    @apply text-center text-[10px] font-medium leading-tight;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-panel-footer-actions {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .tech-panel-cta {
+    @apply inline-flex items-center;
+  }
+
+  /* Technician Tasks (/tickets) queue */
+  .tech-tasks-kpi-row {
+    @apply mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .tech-tasks-kpi {
+    @apply flex flex-col rounded-2xl px-4 py-3;
+    border: 1px solid rgba(120, 165, 255, 0.18);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.88) 0%, rgba(7, 13, 29, 0.92) 100%);
+  }
+
+  .tech-tasks-kpi-label {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-kpi-num {
+    @apply text-2xl font-bold leading-tight;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-kpi-hint {
+    @apply mt-0.5 text-xs;
+    color: rgba(154, 176, 223, 0.72);
+  }
+
+  .tech-tasks-kpi--queue .tech-tasks-kpi-num {
+    color: #7cb3ff;
+  }
+
+  .tech-tasks-kpi--priority .tech-tasks-kpi-num {
+    color: #fb923c;
+  }
+
+  .tech-tasks-kpi--cleared .tech-tasks-kpi-num {
+    color: #4ade80;
+  }
+
+  .tech-tasks-kpi--total .tech-tasks-kpi-num {
+    color: #c4b5fd;
+  }
+
+  .tech-tasks-queue-section {
+    @apply mb-2;
+  }
+
+  .tech-tasks-queue-toolbar {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .tech-tasks-queue-title {
+    @apply m-0 text-xl font-bold tracking-tight;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-queue-sub {
+    @apply m-0 mt-1 max-w-2xl;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-queue-filters {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .tech-tasks-filter-label {
+    @apply m-0;
+  }
+
+  .tech-tasks-select {
+    @apply cursor-not-allowed rounded-xl px-3 py-2 text-sm font-medium;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    background: rgba(8, 14, 32, 0.85);
+    color: #dce7ff;
+    min-width: 11rem;
+  }
+
+  .tech-tasks-empty {
+    @apply rounded-xl px-4 py-6 text-center;
+    border: 1px dashed rgba(120, 165, 255, 0.22);
+    color: rgba(154, 176, 223, 0.9);
+  }
+
+  .tech-tasks-category-block {
+    @apply mb-8;
+  }
+
+  .tech-tasks-category-head {
+    @apply mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .tech-tasks-category-title {
+    @apply m-0 text-sm font-bold uppercase tracking-wide;
+    color: rgba(186, 206, 250, 0.95);
+  }
+
+  .tech-tasks-category-badges {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .tech-tasks-mini-badge {
+    @apply rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    color: rgba(186, 206, 250, 0.95);
+    background: rgba(100, 140, 255, 0.1);
+  }
+
+  .tech-tasks-mini-badge--urgent {
+    border-color: rgba(251, 146, 60, 0.45);
+    color: #fdba74;
+    background: rgba(251, 146, 60, 0.1);
+  }
+
+  .tech-tasks-card-list {
+    @apply m-0 flex list-none flex-col gap-3 p-0;
+  }
+
+  .tech-tasks-card {
+    @apply relative overflow-hidden rounded-2xl p-4 sm:p-5;
+    border: 1px solid rgba(120, 165, 255, 0.16);
+    background: linear-gradient(160deg, rgba(10, 18, 38, 0.95) 0%, rgba(6, 11, 24, 0.98) 100%);
+  }
+
+  .tech-tasks-card-accent {
+    @apply absolute bottom-0 left-0 top-0 w-1 rounded-l-2xl;
+    background: linear-gradient(180deg, #7cb3ff, #2dd4bf);
+  }
+
+  .tech-tasks-card-top {
+    @apply mb-3 flex flex-wrap items-start justify-between gap-2 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-card-headline {
+    @apply m-0 min-w-0 flex-1 text-lg font-bold leading-snug;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-tasks-card-headline a {
+    @apply no-underline transition;
+    color: #f3f8ff;
+  }
+
+  .tech-tasks-card-headline a:hover {
+    color: #c7ff2f;
+  }
+
+  .tech-tasks-card-user {
+    @apply mb-3 flex items-center gap-3 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-card-image-link {
+    @apply mb-3 block overflow-hidden rounded-xl pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-card-image {
+    @apply block h-40 w-full rounded-lg object-cover;
+    max-width: 340px;
+    border: 1px solid rgba(120, 165, 255, 0.24);
+  }
+
+  .tech-tasks-card-avatar {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold;
+    color: #0a1020;
+    background: linear-gradient(135deg, rgba(158, 181, 248, 0.95), rgba(199, 255, 47, 0.75));
+    border: 1px solid rgba(120, 165, 255, 0.35);
+  }
+
+  .tech-tasks-card-user-text {
+    @apply min-w-0 flex-1;
+  }
+
+  .tech-tasks-card-name {
+    @apply m-0 truncate text-sm font-semibold;
+    color: #edf3ff;
+  }
+
+  .tech-tasks-card-email {
+    @apply m-0 truncate text-xs;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-tasks-card-when {
+    @apply shrink-0 text-xs font-medium;
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-tasks-card-meta {
+    @apply mb-4 flex flex-wrap items-center gap-2 pl-3 sm:pl-4;
+  }
+
+  .tech-tasks-priority {
+    @apply rounded-md px-2 py-0.5 text-xs font-semibold uppercase;
+    border: 1px solid rgba(120, 165, 255, 0.25);
+    color: rgba(186, 206, 250, 0.95);
+    background: rgba(8, 14, 32, 0.65);
+  }
+
+  .tech-tasks-assignee {
+    @apply text-xs;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-tasks-solved {
+    @apply rounded-md px-2 py-0.5 text-xs font-bold uppercase;
+    color: #bbf7d0;
+    border: 1px solid rgba(74, 222, 128, 0.45);
+    background: rgba(74, 222, 128, 0.12);
+  }
+
+  .tech-tasks-rejected {
+    @apply rounded-md px-2 py-0.5 text-xs font-bold uppercase;
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  .tech-tasks-card-times {
+    @apply grid gap-3 border-t border-white/10 pt-3 pl-3 sm:grid-cols-3 sm:pl-4;
+    border-color: rgba(120, 165, 255, 0.12);
+  }
+
+  .tech-tasks-time-label {
+    @apply mb-0.5 block text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.75);
+  }
+
+  .tech-tasks-time-value {
+    @apply text-xs font-medium;
+    color: rgba(220, 231, 255, 0.92);
+  }
+
+  .tech-tasks-card-actions {
+    @apply mt-3 border-t pt-3 pl-3 sm:pl-4;
+    border-color: rgba(120, 165, 255, 0.12);
+  }
+
+  .tech-tasks-solve-btn {
+    @apply min-w-28 justify-center;
+  }
+
+  /* Technician settlements (before / after photos) */
+  .tech-settlements-grid {
+    @apply mb-6 grid gap-4 lg:grid-cols-2;
+  }
+
+  .tech-settlements-ticket-row {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .tech-settlements-ticket-label {
+    @apply flex min-w-0 flex-1 flex-col gap-1;
+  }
+
+  .tech-settlements-ticket-label-text {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-settlements-ticket-select {
+    @apply w-full max-w-xl rounded-xl px-3 py-2.5 text-sm font-medium outline-none;
+    border: 1px solid rgba(120, 165, 255, 0.28);
+    background: rgba(8, 14, 32, 0.88);
+    color: #edf3ff;
+  }
+
+  .tech-settlements-open-ticket {
+    @apply shrink-0 self-start sm:self-auto;
+  }
+
+  .tech-settlements-slot {
+    @apply rounded-2xl p-5;
+    border: 1px solid rgba(120, 165, 255, 0.18);
+    background: linear-gradient(155deg, rgba(11, 21, 41, 0.92) 0%, rgba(7, 13, 29, 0.94) 100%);
+  }
+
+  .tech-settlements-slot--disabled {
+    @apply opacity-60;
+  }
+
+  .tech-settlements-slot-head {
+    @apply mb-4 flex gap-3;
+  }
+
+  .tech-settlements-slot-icon {
+    @apply mt-0.5 h-8 w-8 shrink-0;
+    color: #c7ff2f;
+  }
+
+  .tech-settlements-slot-title {
+    @apply m-0 text-lg font-bold;
+    color: #f0f6ff;
+    font-family: "Sora", "Manrope", sans-serif;
+  }
+
+  .tech-settlements-slot-desc {
+    @apply m-0 mt-1;
+    color: rgba(154, 176, 223, 0.88);
+  }
+
+  .tech-settlements-preview {
+    @apply mb-4 flex min-h-[200px] items-center justify-center overflow-hidden rounded-xl;
+    border: 1px dashed rgba(120, 165, 255, 0.25);
+    background: rgba(6, 12, 26, 0.65);
+  }
+
+  .tech-settlements-img {
+    @apply max-h-64 w-full object-contain;
+  }
+
+  .tech-settlements-placeholder {
+    @apply px-4 py-8 text-center;
+    color: rgba(154, 176, 223, 0.85);
+  }
+
+  .tech-settlements-file-btn {
+    @apply inline-flex cursor-pointer;
+  }
+
+  .tech-settlements-filename {
+    @apply mt-2 truncate;
+    color: rgba(154, 176, 223, 0.8);
+  }
+
+  .tech-settlements-meta {
+    @apply mt-2;
+    color: rgba(154, 176, 223, 0.75);
+  }
+}
